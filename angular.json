@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "1.14.4-Ranking-Calculator": {
+    "wow-classic-era-honorcalculator": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
@@ -17,7 +17,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "outputPath": "dist/1.14.4-ranking-calculator",
+            "outputPath": "dist/wow-classic-era-honorcalculator",
             "index": "src/index.html",
             "main": "src/main.ts",
             "polyfills": [
@@ -30,9 +30,12 @@
               "src/assets"
             ],
             "styles": [
+              "node_modules/bootstrap/scss/bootstrap.scss",
               "src/styles.scss"
             ],
-            "scripts": []
+            "scripts": [
+              "node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"
+            ]
           },
           "configurations": {
             "production": {
@@ -65,10 +68,10 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "browserTarget": "1.14.4-Ranking-Calculator:build:production"
+              "browserTarget": "wow-classic-era-honorcalculator:build:production"
             },
             "development": {
-              "browserTarget": "1.14.4-Ranking-Calculator:build:development"
+              "browserTarget": "wow-classic-era-honorcalculator:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -76,7 +79,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "1.14.4-Ranking-Calculator:build"
+            "browserTarget": "wow-classic-era-honorcalculator:build"
           }
         },
         "test": {

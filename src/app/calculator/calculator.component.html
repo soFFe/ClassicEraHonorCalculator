@@ -1,0 +1,81 @@
+<div class="row">
+    <form>
+        <div class="input-group mb-3">
+            <label for="currentRank" class="input-group-text">Current Rank</label>
+            <select class="form-select form-select-lg" [(ngModel)]="currentRankNum" name="currentRank" id="currentRank">
+                <option *ngFor="let kvPair of ranks | keyvalue" [ngValue]="kvPair.key">
+                    Rank {{ kvPair.key }}
+                </option>
+            </select>
+            <div class="input-group-text"><img [src]="'assets/rank-icons/' + currentRankNum + '.webp'"></div>
+        </div>
+        <div class="form-floating mb-3">
+            <input type="text" [(ngModel)]="rankProgress" (beforeinput)="validateNumberBeforeInput($event, true)"
+                (change)="validateNumberOnChange($event, 0, 100)" class="form-control font-monospace" name="rankProgress"
+                autocomplete="off" id="rankProgress" [placeholder]="rankProgress">
+            <label for="rankProgress" class="form-label">Rank Progress (%)</label>
+        </div>
+        <div class="form-floating mb-3">
+            <input type="text" [(ngModel)]="honorFarmed" (beforeinput)="validateNumberBeforeInput($event, false)"
+                (change)="validateNumberOnChange($event, 0, 500000)" class="form-control font-monospace" name="honorFarmed"
+                autocomplete="off" id="honorFarmed" [placeholder]="honorFarmed">
+            <label class="form-label" for="honorFarmed">Honor farmed this week</label>
+        </div>
+    </form>
+</div>
+<div class="row mt-5">
+    <div class="col">
+        <div class="card">
+            <h5 class="card-header">This Week</h5>
+            <table class="table table-striped table-hover table-bordered mb-0">
+                <tbody>
+                    <tr>
+                        <td>Rating</td>
+                        <td class="font-monospace">{{ CalculateCurrentRating() }}</td>
+                    </tr>
+                    <tr>
+                        <td>CP Farmed</td>
+                        <td class="font-monospace">{{ CalculateCpFarmed() }}</td>
+                    </tr>
+                    <tr>
+                        <td>Max Possible Rating Gain</td>
+                        <td class="font-monospace">+{{ CalculateMaxRatingGain() }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="col">
+        <div class="card">
+            <h5 class="card-header">Next Week</h5>
+            <table class="table table-striped table-hover table-bordered mb-0">
+                <tbody>
+                    <tr>
+                        <td>Rating</td>
+                        <td class="font-monospace">{{ CalculateNextRating() }} <span
+                                [class]="CalculateNextRating() - CalculateCurrentRating() > 0 ? 'badge bg-success' : 'badge bg-danger'"><span
+                                    *ngIf="CalculateNextRating() - CalculateCurrentRating() >= 0">+</span>{{
+                                CalculateNextRating() - CalculateCurrentRating() }}</span></td>
+                    </tr>
+                    <tr>
+                        <td>Rank</td>
+                        <td class="font-monospace">{{ CalculateNextRankNum() }} <span
+                                [class]="CalculateNextRankNum() - currentRankNum > 0 ? 'badge bg-success' : 'badge bg-danger'"><span
+                                    *ngIf="CalculateNextRankNum() - currentRankNum >= 0">+</span>{{
+                                CalculateNextRankNum() - currentRankNum }}</span></td>
+                    </tr>
+                    <tr>
+                        <td>Max Possible Rank</td>
+                        <td class="font-monospace">{{ CalculateMaxNextRankNum() }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<div class="progress mt-5" role="progressbar" style="height: 60px;">
+    <div class="progress-bar bg-success overflow-visible" [style]="'width: ' + CalculateHonorFarmProgress() + '%'">
+        <span class="text-center fs-5 ps-2 pe-2">{{ honorFarmed }} / {{ CalculateMinimumHonorForMaxRatingGain() }} Honor</span>
+        <span class="ps-2 pe-2">{{ CalculateHonorFarmProgress().toFixed(2) }}%</span>
+    </div>
+</div>

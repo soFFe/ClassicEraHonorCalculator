@@ -1,27 +1,41 @@
-# 1144RankingCalculator
+# Classic Era Honor Calculator
+A simple Angular Web-App intended for World of Warcraft Classic Era PvP players.
+The 1.14.4 PvP System Update indirectly introduced limits to the amount of Rank Progress you can gain in one week.
+This Calculator is meant for people who want to min/max these limits.
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 16.2.0.
+## Ranking information used in this Calculator
+| Rank | CP Required for Rank | Change factor for Rank | Honor to CP Conversion Rate |
+|:----:|:--------------------:|:----------------------:|:---------------------------:|
+| 1    | 0                    | 1.0                    | 20000 / 45000               |
+| 2    | 2000                 | 1.0                    | 20000 / 45000               |
+| 3    | 5000                 | 1.0                    | 20000 / 45000               |
+| 4    | 10000                | 0.8                    | 20769 / 50000               |
+| 5    | 15000                | 0.8                    | 20000 / 45000               |
+| 6    | 20000                | 0.8                    | 20000 / 45000               |
+| 7    | 25000                | 0.7                    | 40000 / 175000               |
+| 8    | 30000                | 0.7                    | 40000 / 175000               |
+| 9    | 35000                | 0.6                    | 40000 / 175000               |
+| 10   | 40000                | 0.5                    | 40000 / 175000               |
+| 11   | 45000                | 0.5                    | 65000 / 500000               |
+| 12   | 50000                | 0.4                    | 65000 / 500000               |
+| 13   | 55000                | 0.4                    | 65000 / 500000               |
+| 14   | 60000                | 0.34                   | 65000 / 500000               |
 
-## Development server
+## Inaccuracies
+There will most likely be inaccuracies in the Honor values displayed, due to inconsistencies in data provided by Blizzard.
+Inaccurate Information:
+- R14 Minimum CP Requirement = 60k(defined in table) or 65k(derived from text)? I chose 60k.
+- Honor to CP Conversion Rates: Blizzard did not seem to want to release this rate for each Rank+Level. They have provided rough data points for R1-R6, R7-R10 and R11-R14. They provided seemingly more accurate(?) data for R4. I chose to include every data point provided (including the more specific R4 Conversion Rate).
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
+We probably will end up reverse engineering these, if Blizzard does not release accurate information.
+Until then, I advise you to use this as a rough estimation on the minimum amount of effort you need to maximize your gains.
 
-## Code scaffolding
+## References
+- [WoW Classic Era 1.14.4 PvP Ranking Update Examples](https://eu.forums.blizzard.com/en/wow/t/wow-classic-era-1144-pvp-ranking-update-examples/463646)
+- [Classic Era 1.14.4 PvP Update](https://eu.forums.blizzard.com/en/wow/t/classic-era-1144-pvp-update/457615)
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
-
-## Build
-
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
-
-## Running unit tests
-
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
-
-## Running end-to-end tests
-
-Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
-
-## Further help
-
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+## Project Dependencies
+- Angular 16.2
+- node
+- npm
+- Bootstrap 5.3.1
