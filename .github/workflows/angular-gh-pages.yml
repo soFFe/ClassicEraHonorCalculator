@@ -34,15 +34,16 @@ jobs:
           base_href: /ClassicEraHonorCalculator/   # make sure this corresponds to https://<your_username>.github.io/<base_href>/
           deploy_branch: gh-pages # The branch the action should deploy to.
           angular_dist_build_folder: dist/wow-classic-era-honorcalculator # The folder where your project is supposed to be after running ng build by the action.
+
   
   # Deployment job
-  deploy:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    runs-on: ubuntu-latest
-    needs: build
-    steps:
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v2
+  #deploy:
+  #  environment:
+  #    name: github-pages
+  #    url: ${{ steps.deployment.outputs.page_url }}
+  #  runs-on: ubuntu-latest
+  #  needs: build
+  #  steps:
+  #    - name: Deploy to GitHub Pages
+  #      id: deployment
+  #      uses: actions/deploy-pages@v2
