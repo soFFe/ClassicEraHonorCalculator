@@ -1,4 +1,6 @@
 # Classic Era Honor Calculator
+![Build](https://github.com/soFFe/ClassicEraHonorCalculator/actions/workflows/angular-gh-pages.yml/badge.svg)
+
 A simple Angular Web-App intended for World of Warcraft Classic Era PvP players.
 The 1.14.4 PvP System Update indirectly introduced limits to the amount of Rank Progress you can gain in one week.
 This Calculator is meant for people who want to min/max these limits.

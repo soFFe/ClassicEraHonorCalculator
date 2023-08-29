@@ -159,6 +159,36 @@ export class CalculatorComponent implements OnInit {
         }
         else
         {
+            throw new Error("Could not calculate next rank");
+        }
+    }
+
+    CalculateNextRankPercentage(): number {
+        let nextRating = this.CalculateNextRating();
+        let rankRequirementsMet = Array.from(RankData.RankMap.values()).filter(r => nextRating >= r.CpRequirement);
+        if(rankRequirementsMet.length > 0)
+        {
+            let nextRank = rankRequirementsMet[rankRequirementsMet.length - 1];
+            let cpAboveRequirement = nextRating - nextRank.CpRequirement;
+            let nextRankMaxCp = 0;
+            if(nextRank.Num == RankData.MaxRankNum)
+            {
+                nextRankMaxCp = RankData.MaxCp;
+            }
+            else
+            {
+                let plusOneRank = RankData.RankMap.get(nextRank.Num + 1);
+                if(!plusOneRank)
+                {
+                    throw new Error("Could not calculate next ranks maximum CP");
+                }
+                nextRankMaxCp = plusOneRank.CpRequirement;
+            }
+            
+            return Math.round(cpAboveRequirement / (nextRankMaxCp - nextRank.CpRequirement) * 100);
+        }
+        else
+        {
             console.debug("Could not calculate next rank");
             return 0;
         }

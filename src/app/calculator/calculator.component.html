@@ -1,25 +1,40 @@
+<div class="bg-danger-subtle mb-4 ps-2 rounded text-danger">
+    <small>The calculator does not calculate Decay yet. If you gain 0 rating, that means you're decaying!</small>
+</div>
 <div class="row">
     <form>
-        <div class="input-group mb-3">
-            <label for="currentRank" class="input-group-text">Current Rank</label>
-            <select class="form-select form-select-lg" [(ngModel)]="currentRankNum" name="currentRank" id="currentRank">
-                <option *ngFor="let kvPair of ranks | keyvalue" [ngValue]="kvPair.key">
-                    Rank {{ kvPair.key }}
-                </option>
-            </select>
-            <div class="input-group-text"><img [src]="'assets/rank-icons/' + currentRankNum + '.webp'"></div>
+        <div>
+            <label for="currentRank">Current Rank</label>
+            <div class="input-group">
+                <div class="input-group-text"><img [src]="'assets/rank-icons/' + currentRankNum + '.webp'"></div>
+                <select class="form-select form-select-lg" [(ngModel)]="currentRankNum" name="currentRank"
+                    id="currentRank">
+                    <option *ngFor="let kvPair of ranks | keyvalue" [ngValue]="kvPair.key">
+                        Rank {{ kvPair.key }}
+                    </option>
+                </select>
+            </div>
         </div>
-        <div class="form-floating mb-3">
-            <input type="text" [(ngModel)]="rankProgress" (beforeinput)="validateNumberBeforeInput($event, true)"
-                (change)="validateNumberOnChange($event, 0, 100)" class="form-control font-monospace" name="rankProgress"
-                autocomplete="off" id="rankProgress" [placeholder]="rankProgress">
-            <label for="rankProgress" class="form-label">Rank Progress (%)</label>
+        <div class="mt-3">
+            <label for="rankProgress">Rank Progress (%)</label>
+            <div class="input-group">
+                <button class="btn btn-outline-info" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#rankProgressHelp">❔</button>
+                <input type="text" [(ngModel)]="rankProgress" (beforeinput)="validateNumberBeforeInput($event, true)"
+                    (change)="validateNumberOnChange($event, 0, 100)" class="form-control font-monospace"
+                    name="rankProgress" autocomplete="off" id="rankProgress" [placeholder]="rankProgress">
+            </div>
         </div>
-        <div class="form-floating mb-3">
+        <div class="collapse bg-info-subtle border mt-2" id="rankProgressHelp">
+            <p class="m-3">
+                You can type <code>/run print((GetPVPRankProgress()*100).."%")</code> ingame to get the exact percentage
+            </p>
+        </div>
+        <div class="mt-3">
+            <label for="honorFarmed">Honor this week</label>
             <input type="text" [(ngModel)]="honorFarmed" (beforeinput)="validateNumberBeforeInput($event, false)"
-                (change)="validateNumberOnChange($event, 0, 500000)" class="form-control font-monospace" name="honorFarmed"
-                autocomplete="off" id="honorFarmed" [placeholder]="honorFarmed">
-            <label class="form-label" for="honorFarmed">Honor farmed this week</label>
+                (change)="validateNumberOnChange($event, 0, 500000)" class="form-control font-monospace"
+                name="honorFarmed" autocomplete="off" id="honorFarmed" [placeholder]="honorFarmed">
         </div>
     </form>
 </div>
@@ -52,17 +67,20 @@
                 <tbody>
                     <tr>
                         <td>Rating</td>
-                        <td class="font-monospace">{{ CalculateNextRating() }} <span
-                                [class]="CalculateNextRating() - CalculateCurrentRating() > 0 ? 'badge bg-success' : 'badge bg-danger'"><span
-                                    *ngIf="CalculateNextRating() - CalculateCurrentRating() >= 0">+</span>{{
-                                CalculateNextRating() - CalculateCurrentRating() }}</span></td>
+                        <td class="font-monospace">
+                            {{ CalculateNextRating() }} 
+                            <span [class]="CalculateNextRating() - CalculateCurrentRating() > 0 ? 'badge bg-success' : 'badge bg-danger'">
+                                <span *ngIf="CalculateNextRating() - CalculateCurrentRating() >= 0">+</span>
+                                {{ CalculateNextRating() - CalculateCurrentRating() }}
+                            </span>
+                        </td>
                     </tr>
                     <tr>
                         <td>Rank</td>
-                        <td class="font-monospace">{{ CalculateNextRankNum() }} <span
-                                [class]="CalculateNextRankNum() - currentRankNum > 0 ? 'badge bg-success' : 'badge bg-danger'"><span
-                                    *ngIf="CalculateNextRankNum() - currentRankNum >= 0">+</span>{{
-                                CalculateNextRankNum() - currentRankNum }}</span></td>
+                        <td class="font-monospace">
+                            {{ CalculateNextRankNum() }} ({{ CalculateNextRankPercentage() }}%)
+                            <span [class]="CalculateNextRankNum() - currentRankNum > 0 ? 'badge bg-success' : 'badge bg-danger'"><span *ngIf="CalculateNextRankNum() - currentRankNum >= 0">+</span>{{ CalculateNextRankNum() - currentRankNum }}</span>
+                        </td>
                     </tr>
                     <tr>
                         <td>Max Possible Rank</td>
@@ -73,7 +91,8 @@
         </div>
     </div>
 </div>
-<div class="progress mt-5" role="progressbar" style="height: 60px;">
+<h5 class="mt-5">min. Honor for max. Rating</h5>
+<div class="progress" role="progressbar" style="height: 60px;">
     <div class="progress-bar bg-success overflow-visible" [style]="'width: ' + CalculateHonorFarmProgress() + '%'">
         <span class="text-center fs-5 ps-2 pe-2">{{ honorFarmed }} / {{ CalculateMinimumHonorForMaxRatingGain() }} Honor</span>
         <span class="ps-2 pe-2">{{ CalculateHonorFarmProgress().toFixed(2) }}%</span>
