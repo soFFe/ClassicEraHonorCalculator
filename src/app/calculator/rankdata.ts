@@ -73,7 +73,7 @@ export class RankData {
         [7, new Rank({ num: 7, cpRequirement: 25000, changeFactor: 0.7, honorConversionFactor: 40000 / 175000 })],
         [8, new Rank({ num: 8, cpRequirement: 30000, changeFactor: 0.7, honorConversionFactor: 40000 / 175000 })],
         [9, new Rank({ num: 9, cpRequirement: 35000, changeFactor: 0.6, honorConversionFactor: 40000 / 175000 })],
-        [10, new Rank({ num: 10, cpRequirement: 40000, changeFactor: 0.5, honorConversionFactor: 65000 / 500000 })],
+        [10, new Rank({ num: 10, cpRequirement: 40000, changeFactor: 0.5, honorConversionFactor: 40000 / 175000 })],
         [11, new Rank({ num: 11, cpRequirement: 45000, changeFactor: 0.5, honorConversionFactor: 65000 / 500000 })],
         [12, new Rank({ num: 12, cpRequirement: 50000, changeFactor: 0.4, honorConversionFactor: 65000 / 500000 })],
         [13, new Rank({ num: 13, cpRequirement: 55000, changeFactor: 0.4, honorConversionFactor: 65000 / 500000 })],
