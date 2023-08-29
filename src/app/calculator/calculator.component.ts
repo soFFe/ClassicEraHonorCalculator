@@ -86,14 +86,11 @@ export class CalculatorComponent implements OnInit {
     }
 
     CalculateMinimumHonorForMaxRatingGain(): number {
-        let maxGain = this.CalculateMaxRatingGain();
-        let maxRankNum = this.CalculateMaxNextRankNum();
-        let maxRank = RankData.RankMap.get(maxRankNum + 1);
-        if(!maxRank){
-            throw new Error(`Could not find Rank ${maxRankNum + 1} in RankMap`);
-        }
+        let maxQualifiedRanks = Array.from(RankData.RankMap.values())
+            .filter(r => r.Num > this.currentRankNum && r.Num <= (this.currentRankNum + RankData.MaxRankQualifications));
+        let minCpRequirement = maxQualifiedRanks[maxQualifiedRanks.length - 1].CpRequirement;
 
-        return Math.round(maxRank.CpRequirement / this.currentRank.HonorConversionFactor);
+        return Math.round(minCpRequirement / this.currentRank.HonorConversionFactor);
     }
 
     //#region This Week
