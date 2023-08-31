@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Rank, RankData } from './rankdata';
+import { ConversionBracket, Rank, RankData } from './rankdata';
 
 @Component({
     selector: 'calculator-root',
@@ -79,18 +79,64 @@ export class CalculatorComponent implements OnInit {
     }
     ngOnInit(): void { }
 
+    //#region Display Methods
+    DisplayCpFarmed(): number {
+        return Math.round(this.CalculateCpFarmed());
+    }
+
+    DisplayMaxRatingGain(): number {
+        return Math.round(this.CalculateMaxRatingGain());
+    }
+
+    DisplayQualifiedRank(): number {
+        let qualifiedRanks = this.CalculateQualifiedRanks(this.honorFarmed);
+        if(qualifiedRanks.length > 0)
+            return qualifiedRanks[qualifiedRanks.length - 1].Num;
+        else
+            return 1;
+    }
+
+    DisplayNextRankPercentage(): number {
+        return Math.round(this.CalculateNextRankPercentage());
+    }
+    //#endregion
+
     //#region Calculation Methods
     CalculateHonorFarmProgress(): number {
         let honorProgressPercentage = this.honorFarmed / this.CalculateMinimumHonorForMaxRatingGain() * 100;
         return Math.min(honorProgressPercentage, 100);
     }
 
+    CalculateQualifiedRanks(honor: number): Rank[] {
+        let maxQualifiedRanks = Array.from(RankData.RankMap.values())
+            .filter(r => r.Num >= this.currentRankNum && r.Num <= Math.min(this.currentRankNum + RankData.MaxRankQualifications, RankData.MaxRankNum), this);
+        let initialLen = maxQualifiedRanks.length;
+
+        for(let i = initialLen - 1; i >= 0; i--)
+        {
+            // check if honor qualification checks out
+            if(honor < maxQualifiedRanks[i].HonorRequirement)
+            {
+                // get outta here
+                maxQualifiedRanks.pop();
+            }
+        }
+
+        return maxQualifiedRanks;
+    }
+
     CalculateMinimumHonorForMaxRatingGain(): number {
         let maxQualifiedRanks = Array.from(RankData.RankMap.values())
-            .filter(r => r.Num > this.currentRankNum && r.Num <= (this.currentRankNum + RankData.MaxRankQualifications));
-        let minCpRequirement = maxQualifiedRanks[maxQualifiedRanks.length - 1].CpRequirement;
-
-        return Math.round(minCpRequirement / this.currentRank.HonorConversionFactor);
+            .filter(r => r.Num > this.currentRankNum && r.Num <= Math.min(this.currentRankNum + RankData.MaxRankQualifications, RankData.MaxRankNum));
+        if(maxQualifiedRanks.length > 0)
+        {
+            return this.currentRank.CalculateMinHonorForRankQualification(this.currentRank, maxQualifiedRanks[maxQualifiedRanks.length - 1]);
+        }
+        else
+        {
+            // most likely rank 14
+            return this.currentRank.CalculateMinHonorForRankQualification(this.currentRank, this.currentRank);
+        }
     }
 
     //#region This Week
@@ -113,38 +159,45 @@ export class CalculatorComponent implements OnInit {
     }
 
     CalculateCpFarmed(): number {
-        let CP = Math.min(this.honorFarmed * this.currentRank.HonorConversionFactor, RankData.MaxCp);
-        return Math.round(CP);
+        let conversionRate = this.currentRank.GetConversionBracket().CpToHonorRate;
+        let CP = Math.min(this.honorFarmed / conversionRate, RankData.MaxCp);
+
+        return CP;
     }
 
     CalculateMaxRatingGain(): number {
-        return this.CalculateRatingGain(RankData.MaxCp);
+        let maxQualifiedRanks = this.CalculateQualifiedRanks(this.CalculateMinimumHonorForMaxRatingGain());
+        return this.CalculateRatingGain(maxQualifiedRanks);
     }
     //#endregion
 
     //#region Next Week
-    CalculateRatingGain(cp: number): number {
+    CalculateRatingGain(qualifiedRanks: Rank[]): number {
         let cpSum = 0;
-        let qualifiedRanks = Array.from(RankData.RankMap.values())
-            .filter(r => cp >= r.CpRequirement && r.Num > this.currentRankNum && r.Num <= (this.currentRankNum + RankData.MaxRankQualifications));
 
-        // console.debug(`User qualified for ${qualifiedRanks.length} ranks this week:`, qualifiedRanks);
+        for(let i = 0; i < qualifiedRanks.length; i++)
+        {
+            let rank = qualifiedRanks[i];
+            if(rank.Num == this.currentRankNum)
+            {
+                // we don't gain Rating for qualifying for the same rank
+                continue;
+            }
 
-        qualifiedRanks.forEach(rank => {
-                let previousRank = RankData.RankMap.get(rank.Num - 1);
-                if(!previousRank)
-                {
-                    console.debug(`Could not find previous Rank of Rank ${rank.Num}. Tried to get Rank ${rank.Num - 1}`);
-                    return; // continue
-                }
+            let previousRank = RankData.RankMap.get(rank.Num - 1);
+            if(!previousRank)
+            {
+                // R14?
+                continue;
+            }
 
-                cpSum += rank.CalculateRankQualificationReward(previousRank);
-        });
+            cpSum += rank.CalculateRankQualificationReward(previousRank);
+        }
         
-        return Math.round(cpSum);
+        return cpSum;
     }
     CalculateNextRating(): number {
-        let nextRating = this.CalculateCurrentRating() + this.CalculateRatingGain(this.CalculateCpFarmed());
+        let nextRating = this.CalculateCurrentRating() + this.CalculateRatingGain(this.CalculateQualifiedRanks(this.honorFarmed));
 
         return nextRating;
     }
@@ -185,7 +238,7 @@ export class CalculatorComponent implements OnInit {
                 nextRankMaxCp = plusOneRank.CpRequirement;
             }
             
-            return Math.round(cpAboveRequirement / (nextRankMaxCp - nextRank.CpRequirement) * 100);
+            return cpAboveRequirement / (nextRankMaxCp - nextRank.CpRequirement) * 100;
         }
         else
         {
