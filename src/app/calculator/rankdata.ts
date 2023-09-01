@@ -140,7 +140,7 @@ export class Rank {
         return 0;
     }
 
-    public CalculateMinHonorForRankQualification(currentRank: Rank, highestQualifiedRank: Rank | undefined): number {
+    public CalculateMinHonorForRankQualification(highestQualifiedRank: Rank | undefined): number {
         if (highestQualifiedRank != undefined) {
             if (highestQualifiedRank.Num > this.Num + RankData.MaxRankQualifications) {
                 // Can not qualify for a rank this high
