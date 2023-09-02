@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { ConversionBracket, Rank, RankData } from './rankdata';
+import { RankData } from './rankdata';
+import { Rank } from './rank';
+import { ConversionBracket } from './conversionBracket';
 import { QualificationMilestone } from './qualificationMilestone';
 
 @Component({
@@ -113,7 +115,7 @@ export class CalculatorComponent implements OnInit {
 
     DisplayQualificationMilestones(): QualificationMilestone[] {
         let maxQualifiedRanks = Array.from(RankData.RankMap.values())
-            .filter(r => r.Num > this.currentRankNum && r.Num <= Math.min(this.currentRankNum + RankData.MaxRankQualifications, RankData.MaxRankNum));
+            .filter(r => r.Num > this.currentRankNum && r.Num <= Math.min(this.currentRankNum + RankData.MaxRankQualifications, RankData.MaxRankNum), this);
 
         let milestones: QualificationMilestone[] = new Array();
         for (let i = 0; i < maxQualifiedRanks.length; i++) {
@@ -157,7 +159,7 @@ export class CalculatorComponent implements OnInit {
 
     CalculateMinimumHonorForMaxRatingGain(): number {
         let maxQualifiedRanks = Array.from(RankData.RankMap.values())
-            .filter(r => r.Num > this.currentRankNum && r.Num <= Math.min(this.currentRankNum + RankData.MaxRankQualifications, RankData.MaxRankNum));
+            .filter(r => r.Num > this.currentRankNum && r.Num <= Math.min(this.currentRankNum + RankData.MaxRankQualifications, RankData.MaxRankNum), this);
         if (maxQualifiedRanks.length > 0) {
             return this.currentRank.CalculateMinHonorForRankQualification(maxQualifiedRanks[maxQualifiedRanks.length - 1]);
         }
