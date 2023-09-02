@@ -36,10 +36,10 @@ What I call Conversion Brackets are the Ranges of Ranks that have different QP/H
 These are equal for all Ranks within the Bracket.
 
 | BracketId | MinimumRank | MaximumRank | QP to Honor Conversion Rate |
-|:---------:|:-----------:|:-----------:|:---------------------------:|
-| 0         | 1           | 6           | 2.25                        |
-| 1         | 7           | 10          | 6.502                       |
-| 2         | 11          | 14          | 16.25                       |
+|:---------:|:-----------:|:-----------:|:-------------------------------------:|
+| 0         | 1           | 6           | 45000/20000 = 2.25                    |
+| 1         | 7           | 10          | (175000-45000)/(40000-20000) = 6.5    |
+| 2         | 11          | 14          | (500000-175000)/(60000-40000) = 16.25 |
 
 ## References
 - [WoW Classic Era 1.14.4 PvP Ranking Update Examples](https://eu.forums.blizzard.com/en/wow/t/wow-classic-era-1144-pvp-ranking-update-examples/463646)
