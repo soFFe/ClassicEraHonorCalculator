@@ -320,7 +320,7 @@ export class CalculatorComponent implements OnInit {
         if (e.data == null)
             return;
 
-        let validRegEx = allowDecimalPoint ? /^[\d.]$/ : /^[\d]$/;
+        let validRegEx = allowDecimalPoint ? /^\d|.+$/ : /^\d+$/;
 
         // remove invalid inputs
         if (!validRegEx.test(e.data)) {
