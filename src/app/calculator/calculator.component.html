@@ -97,7 +97,13 @@
     </div>
 </div>
 <div class="d-flex" style="height: 20px"> 
-    <div *ngFor="let ms of qualificationMilestones; let i = index" class="progressbar-milestone" [style]="'width: ' + ms.HonorRequirementPercentage + '%'">
-        <span class="me-2">{{ i < qualificationMilestones.length - 1 ? ms.HonorRequirement : '' }}</span> 
-    </div>
+    <span *ngFor="let ms of qualificationMilestones;" class="progressbar-milestone" [style]="'width: ' + ms.HonorRequirementPercentage + '%'">
+        <button
+            class="progressbar-milestone-button"
+            [title]="'Set your Honor to ' + ms.HonorRequirement"
+            (click)="honorFarmed = ms.HonorRequirement"
+        >
+            {{ ms.HonorRequirement }}
+        </button>
+    </span>
 </div>
