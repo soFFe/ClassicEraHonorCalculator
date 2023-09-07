@@ -1,9 +1,7 @@
 import { Component, OnInit, Output } from '@angular/core';
-import { RankData } from './rankdata';
-import { Rank } from './rank';
-import { ConversionBracket } from './conversionBracket';
-import { QualificationMilestone } from './qualificationMilestone';
-import { Subject } from 'rxjs';
+import { RankData } from './models/rankdata';
+import { Rank } from './models/rank';
+import { QualificationMilestone } from './models/qualificationMilestone';
 
 @Component({
     selector: 'calculator-root',
@@ -132,7 +130,7 @@ export class CalculatorComponent implements OnInit {
 
     DisplayQualificationMilestones(): QualificationMilestone[] {
         let maxQualifiedRanks = Array.from(RankData.RankMap.values())
-            .filter(r => r.Num > this.currentRankNum && r.Num <= Math.min(this.currentRankNum + RankData.MaxRankQualifications, RankData.MaxRankNum), this);
+            .filter(r => r.Num >= this.currentRankNum && r.Num <= Math.min(this.currentRankNum + RankData.MaxRankQualifications, RankData.MaxRankNum), this);
 
         let milestones: QualificationMilestone[] = new Array();
         for (let i = 0; i < maxQualifiedRanks.length; i++) {
@@ -334,14 +332,10 @@ export class CalculatorComponent implements OnInit {
         return retVal;
     }
 
-    copyTextToClipboard(text: string): boolean {
+    copyTextToClipboard(text: string): void {
         if (!navigator.clipboard) {
             let success = this.fallbackCopyTextToClipboard(text);
-            if(success)
-            {
-                return true;
-            }
-            else
+            if(!success)
             {
                 throw new Error("Could not copy text");
             }
@@ -349,11 +343,10 @@ export class CalculatorComponent implements OnInit {
 
         navigator.clipboard.writeText(text).then(function () {
             // success
+            
         }, function (err) {
             throw new Error('Could not copy text: ', err);
         });
-        
-        return true;
     }
     //#endregion
 

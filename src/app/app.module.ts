@@ -3,7 +3,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { FormsModule } from '@angular/forms';
 
 import { NgIconsModule } from '@ng-icons/core';
-import { bootstrapClipboard } from '@ng-icons/bootstrap-icons';
+import { bootstrapClipboard, bootstrapDiscord, bootstrapChevronDoubleRight, bootstrapGithub, bootstrapGraphUpArrow } from '@ng-icons/bootstrap-icons';
 
 import { AppComponent } from './app.component';
 import { CalculatorComponent } from './calculator/calculator.component';
@@ -20,7 +20,7 @@ import { FooterComponent } from './footer/footer.component';
   imports: [
     BrowserModule,
     FormsModule,
-    NgIconsModule.withIcons({ bootstrapClipboard })
+    NgIconsModule.withIcons({ bootstrapClipboard, bootstrapDiscord, bootstrapChevronDoubleRight, bootstrapGithub, bootstrapGraphUpArrow })
   ],
   providers: [],
   bootstrap: [AppComponent]

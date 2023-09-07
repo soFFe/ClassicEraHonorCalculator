@@ -8,7 +8,12 @@
     outline: none;
     border: none;
     background: none;
-    &:hover {
-        text-decoration: underline;
-    }
+    padding: 0;
+    margin: 0;
+    height: 100%;
+}
+
+.progressbar-milestone:hover .progressbar-milestone-button>ng-icon
+{
+    opacity: 1;
 }

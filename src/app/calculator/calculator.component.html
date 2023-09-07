@@ -1,4 +1,4 @@
-<div class="row">
+<div class="row mt-3">
     <form>
         <div>
             <label for="currentRank">Current Rank</label>
@@ -18,7 +18,10 @@
                 <input type="text" [(ngModel)]="rankProgress" (beforeinput)="validateNumberBeforeInput($event, true)"
                 (change)="validateNumberOnChange($event, 0, 100)" class="form-control font-monospace"
                 name="rankProgress" autocomplete="off" id="rankProgress" [placeholder]="rankProgress">
-                <button type="button" class="btn btn-outline-info" (click)="copyTextToClipboard('/run print((GetPVPRankProgress()*100)..\'%\')')"><span class="align-middle" id="btnCopyToClipboard"><ng-icon name="bootstrapClipboard" size="24px"></ng-icon> Copy LUA Command To Clipboard</span></button>
+                <button type="button" class="btn btn-outline-info d-flex align-items-center" (click)="copyTextToClipboard('/run print((GetPVPRankProgress()*100)..\'%\')')">
+                    <ng-icon name="bootstrapClipboard" class="d-flex"></ng-icon>
+                    <span class="d-flex ms-1">Copy LUA Command To Clipboard</span>
+                </button>
             </div>
         </div>
         <div class="mt-3">
@@ -101,13 +104,10 @@
     </div>
 </div>
 <div class="d-flex" style="height: 20px"> 
-    <span *ngFor="let ms of qualificationMilestones;" class="progressbar-milestone" [style]="'width: ' + ms.HonorRequirementPercentage + '%'">
-        <button
-            class="progressbar-milestone-button"
-            [title]="'Set your Honor to ' + ms.HonorRequirement"
-            (click)="honorFarmed = ms.HonorRequirement"
-        >
-            {{ ms.HonorRequirement }}
+    <span *ngFor="let ms of qualificationMilestones; let i = index" class="progressbar-milestone d-flex justify-content-end" [ngClass]="{ 'border-danger': i == 0 }" [style]="{ width: ms.HonorRequirementPercentage + '%' }">
+        <button type="button" class="progressbar-milestone-button d-flex align-items-center" [ngClass]="{ 'text-danger': i == 0 }" (click)="honorFarmed = ms.HonorRequirement" [title]="'set Honor this week to ' + ms.HonorRequirement">
+            <ng-icon name="bootstrapChevronDoubleRight" class="d-flex fade me-1"></ng-icon>
+            <span class="me-1">{{ ms.HonorRequirement }}</span>
         </button>
     </span>
 </div>
