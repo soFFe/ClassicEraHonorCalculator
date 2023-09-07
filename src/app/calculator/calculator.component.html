@@ -1,7 +1,3 @@
-<div class="alert alert-danger alert-dismissible fade show mb-4" role="alert">
-    <small>The calculator does not calculate how much you Decay yet. If you gain 0 rating, that means you're decaying!</small>
-    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>    
-</div>
 <div class="row">
     <form>
         <div>
@@ -62,18 +58,24 @@
                     <tr>
                         <td>Rating</td>
                         <td class="font-monospace">
-                            {{ CalculateNextRating() }} 
-                            <span [class]="CalculateNextRating() - CalculateCurrentRating() > 0 ? 'badge bg-success' : 'badge bg-danger'">
-                                <span *ngIf="CalculateNextRating() - CalculateCurrentRating() >= 0">+</span>
-                                {{ CalculateNextRating() - CalculateCurrentRating() }}
+                            <!-- TODO: Placeholder until Decay gets implemented -->
+                            <span class="badge bg-danger" *ngIf="CalculateNextRating() - CalculateCurrentRating() <= 0">Decaying</span>
+                            <span *ngIf="CalculateNextRating() - CalculateCurrentRating() > 0">
+                                {{ CalculateNextRating() }}
+                                <span [ngClass]="{'badge': true, 'bg-success': CalculateNextRating() - CalculateCurrentRating() > 0, 'bg-danger': CalculateNextRating() - CalculateCurrentRating() <= 0}">
+                                    <span *ngIf="CalculateNextRating() - CalculateCurrentRating() >= 0">+</span>
+                                    {{ CalculateNextRating() - CalculateCurrentRating() }}
+                                </span>
                             </span>
                         </td>
                     </tr>
                     <tr>
                         <td>Rank</td>
                         <td class="font-monospace">
-                            {{ CalculateNextRankNum() }} ({{ DisplayNextRankPercentage() }}%)
-                            <span [class]="CalculateNextRankNum() - currentRankNum > 0 ? 'badge bg-success' : 'badge bg-danger'"><span *ngIf="CalculateNextRankNum() - currentRankNum >= 0">+</span>{{ CalculateNextRankNum() - currentRankNum }}</span>
+                            <span>
+                                {{ CalculateNextRankNum() }} ({{ DisplayNextRankPercentage() }}%)
+                                <span [ngClass]="{'badge': true, 'bg-success': CalculateNextRankNum() - currentRankNum > 0, 'bg-warning': CalculateNextRankNum() - currentRankNum == 0}">{{ CalculateNextRankNum() - currentRankNum }}</span>
+                            </span>
                         </td>
                     </tr>
                     <tr>
