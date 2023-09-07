@@ -12,22 +12,22 @@ That's why I have decided to rephrase this to two different phrases:
 2. Qualification Points that represent the rank you have qualified for by farming a specific amount of Honor within 1 week.
 
 ## Ranking information used in this Calculator
-| Rank | Rating Required for Rank | Change factor for Rank | Honor Required for Qualification |
-|:----:|:------------------------:|:----------------------:|:--------------------------------:|
-| 1    | 0                        | 1.0                    | 0                                |
-| 2    | 2000                     | 1.0                    | 4500                             |
-| 3    | 5000                     | 1.0                    | 11250                            |
-| 4    | 10000                    | 0.8                    | 22500                            |
-| 5    | 15000                    | 0.8                    | 33750                            |
-| 6    | 20000                    | 0.8                    | 45000                            |
-| 7    | 25000                    | 0.7                    | 77510                            |
-| 8    | 30000                    | 0.7                    | 110020                           |
-| 9    | 35000                    | 0.6                    | 142530                           |
-| 10   | 40000                    | 0.5                    | 175040                           |
-| 11   | 45000                    | 0.5                    | 256250                           |
-| 12   | 50000                    | 0.4                    | 337500                           |
-| 13   | 55000                    | 0.4                    | 418750                           |
-| 14   | 60000                    | 0.34                   | 500000                           |
+| Rank | Rating Required for Rank | Change factor for Rank |
+|:----:|:------------------------:|:----------------------:|
+| 1    | 0                        | 1.0                    |
+| 2    | 2000                     | 1.0                    |
+| 3    | 5000                     | 1.0                    |
+| 4    | 10000                    | 0.8                    |
+| 5    | 15000                    | 0.8                    |
+| 6    | 20000                    | 0.8                    |
+| 7    | 25000                    | 0.7                    |
+| 8    | 30000                    | 0.7                    |
+| 9    | 35000                    | 0.6                    |
+| 10   | 40000                    | 0.5                    |
+| 11   | 45000                    | 0.5                    |
+| 12   | 50000                    | 0.4                    |
+| 13   | 55000                    | 0.4                    |
+| 14   | 60000                    | 0.34                   |
 
 Honor requirements have been provided by Beastinblack @ Firemaw-EU. Thank you!
 
@@ -40,6 +40,22 @@ These are equal for all Ranks within the Bracket.
 | 0         | 1           | 6           | 45000/20000 = 2.25                    |
 | 1         | 7           | 10          | (175000-45000)/(40000-20000) = 6.5    |
 | 2         | 11          | 14          | (500000-175000)/(60000-40000) = 16.25 |
+
+## Dishonorable Kills
+What we know about the effects of DHKs:
+1. You lose 215 to 235 Rating instantly (seemingly random, average is 225)
+2. DHKs do not affect Honor in any way
+You have to /reload to see Rank changes in the Honor Tab of your character.
+
+Due to these facts and how the rest of the system works, you can minimize the amount of honor even further up to R13.
+Example: Being Rank 9 with 95% progress will award you more Rating as a Reward than if you're Rank 10 with 0% Progress.
+If you're planning to rank as fast as possible, you can even skip a week of progression this way, if you are below R10 and plan DHKs at the right times.
+
+## Decay
+What we know about Decay:
+1. You will decay if you could not qualify for your current Rank
+2. You cannot downrank by Decay
+3. Decay will take away up to 2500 Rating Points (exact formular unknown)
 
 ## References
 - [WoW Classic Era 1.14.4 PvP Ranking Update Examples](https://eu.forums.blizzard.com/en/wow/t/wow-classic-era-1144-pvp-ranking-update-examples/463646)

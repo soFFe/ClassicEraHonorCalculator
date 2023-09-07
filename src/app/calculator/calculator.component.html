@@ -10,8 +10,8 @@
                 <div class="input-group-text"><img [src]="'assets/rank-icons/' + currentRankNum + '.webp'"></div>
                 <select class="form-select form-select-lg" [(ngModel)]="currentRankNum" name="currentRank"
                     id="currentRank">
-                    <option *ngFor="let kvPair of ranks | keyvalue" [ngValue]="kvPair.key">
-                        Rank {{ kvPair.key }}
+                    <option *ngFor="let n of ranks" [ngValue]="n">
+                        Rank {{ n }}
                     </option>
                 </select>
             </div>
@@ -91,13 +91,13 @@
 </div>
 <h5 class="mt-5">min. Honor for max. Rating</h5>
 <div class="progress" role="progressbar" style="height: 60px;">
-    <div class="progress-bar bg-success overflow-visible" [style]="'width: ' + CalculateHonorFarmProgress() + '%'">
+    <div class="progress-bar bg-success overflow-visible" [ngStyle]="{ width: CalculateHonorFarmProgress() + '%' }">
         <span class="text-center fs-5 ps-2 pe-2">{{ honorFarmed }} / {{ CalculateMinimumHonorForMaxRatingGain() }} Honor</span>
         <span class="ps-2 pe-2">{{ CalculateHonorFarmProgress().toFixed(2) }}%</span>
     </div>
 </div>
 <div class="d-flex" style="height: 20px"> 
-    <div *ngFor="let ms of qualificationMilestones; let i = index" class="progressbar-milestone" [style]="'width: ' + ms.HonorRequirementPercentage + '%'">
+    <div *ngFor="let ms of qualificationMilestones; let i = index" class="progressbar-milestone" [ngStyle]="{ width: ms.HonorRequirementPercentage + '%' }">
         <span class="me-2">{{ i < qualificationMilestones.length - 1 ? ms.HonorRequirement : '' }}</span> 
     </div>
 </div>

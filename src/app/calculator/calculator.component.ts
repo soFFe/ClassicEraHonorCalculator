@@ -71,7 +71,7 @@ export class CalculatorComponent implements OnInit {
     //#endregion
 
     qualificationMilestones: QualificationMilestone[];
-    ranks: Map<number, Rank> = RankData.RankMap;
+    ranks: Array<number> = Array.from(RankData.RankMap.keys()).filter(n => n <= RankData.MaxRankNum);
     currentRank: Rank;
 
     constructor() {
@@ -207,7 +207,7 @@ export class CalculatorComponent implements OnInit {
 
             let previousRank = RankData.RankMap.get(rank.Num - 1);
             if (!previousRank) {
-                // R14?
+                // R1?
                 continue;
             }
 
