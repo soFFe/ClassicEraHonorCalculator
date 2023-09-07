@@ -1,8 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Output } from '@angular/core';
 import { RankData } from './rankdata';
 import { Rank } from './rank';
 import { ConversionBracket } from './conversionBracket';
 import { QualificationMilestone } from './qualificationMilestone';
+import { Subject } from 'rxjs';
 
 @Component({
     selector: 'calculator-root',
@@ -73,7 +74,7 @@ export class CalculatorComponent implements OnInit {
     qualificationMilestones: QualificationMilestone[];
     ranks: Array<number> = Array.from(RankData.RankMap.keys()).filter(n => n <= RankData.MaxRankNum);
     currentRank: Rank;
-
+    
     constructor() {
         let rCurrent = RankData.RankMap.get(this.currentRankNum);
         if (!rCurrent) {
@@ -83,11 +84,27 @@ export class CalculatorComponent implements OnInit {
         this.currentRank = rCurrent;
         this.qualificationMilestones = this.DisplayQualificationMilestones();
     }
-    ngOnInit(): void { }
+    ngOnInit(): void {
+        
+    }
 
     //#region Display Methods
     DisplayMaxRatingGain(): number {
         return Math.round(this.CalculateMaxRatingGain());
+    }
+
+    DisplayNextRankIconUrl(): string {
+        return this.DisplayRankIconUrl(this.CalculateNextRankNum());
+    }
+
+    DisplayRankIconUrl(rankNum: number): string {
+        let rank = RankData.RankMap.get(rankNum);
+        if(!rank)
+        {
+            throw new Error(`Could not find Rank ${rankNum}} in RankMap`);
+        }
+
+        return rank.Icon;
     }
 
     DisplayQualifiedRank(): number {
@@ -291,7 +308,7 @@ export class CalculatorComponent implements OnInit {
     //#endregion
 
     //#region Copy to Clipboard
-    fallbackCopyTextToClipboard(text: string): void {
+    fallbackCopyTextToClipboard(text: string): boolean {
         var textArea = document.createElement("textarea");
         textArea.value = text;
 
@@ -304,27 +321,39 @@ export class CalculatorComponent implements OnInit {
         textArea.focus();
         textArea.select();
 
+        let retVal = false;
         try {
             var successful = document.execCommand('copy');
-            var msg = successful ? 'successful' : 'unsuccessful';
-            console.log('Fallback: Copying text command was ' + msg);
+            retVal = successful;
         } catch (err) {
             console.error('Fallback: Oops, unable to copy', err);
+            retVal = false;
         }
 
         document.body.removeChild(textArea);
+        return retVal;
     }
 
-    copyTextToClipboard(text: string): void {
+    copyTextToClipboard(text: string): boolean {
         if (!navigator.clipboard) {
-            this.fallbackCopyTextToClipboard(text);
-            return;
+            let success = this.fallbackCopyTextToClipboard(text);
+            if(success)
+            {
+                return true;
+            }
+            else
+            {
+                throw new Error("Could not copy text");
+            }
         }
+
         navigator.clipboard.writeText(text).then(function () {
-            console.log('Copied to Clipboard');
+            // success
         }, function (err) {
-            console.error('Could not copy text: ', err);
+            throw new Error('Could not copy text: ', err);
         });
+        
+        return true;
     }
     //#endregion
 

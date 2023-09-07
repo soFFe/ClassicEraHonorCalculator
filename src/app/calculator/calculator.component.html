@@ -14,15 +14,12 @@
         </div>
         <div class="mt-3">
             <label for="rankProgress">Rank Progress (%)</label>
-            <input type="text" [(ngModel)]="rankProgress" (beforeinput)="validateNumberBeforeInput($event, true)"
+            <div class="input-group">
+                <input type="text" [(ngModel)]="rankProgress" (beforeinput)="validateNumberBeforeInput($event, true)"
                 (change)="validateNumberOnChange($event, 0, 100)" class="form-control font-monospace"
                 name="rankProgress" autocomplete="off" id="rankProgress" [placeholder]="rankProgress">
-        </div>
-        <div class="bg-info-subtle border mt-2">
-            <p class="m-2">
-                You can type <code>/run print((GetPVPRankProgress()*100)..'%')</code> ingame to get the exact percentage
-                <button type="button" class="btn btn-sm btn-outline-info    " (click)="copyTextToClipboard('/run print((GetPVPRankProgress()*100)..\'%\')')">Copy To Clipboard</button>
-            </p>
+                <button type="button" class="btn btn-outline-info" (click)="copyTextToClipboard('/run print((GetPVPRankProgress()*100)..\'%\')')"><span class="align-middle" id="btnCopyToClipboard"><ng-icon name="bootstrapClipboard" size="24px"></ng-icon> Copy LUA Command To Clipboard</span></button>
+            </div>
         </div>
         <div class="mt-3">
             <label for="honorFarmed">Honor this week</label>
@@ -70,21 +67,26 @@
                         </td>
                     </tr>
                     <tr>
+                        <td>Max Possible Rating</td>
+                        <td class="font-monospace">{{ CalculateNextRating() + DisplayMaxRatingGain() }}</td>
+                    </tr>
+                    <tr class="align-middle">
                         <td>Rank</td>
                         <td class="font-monospace">
                             <span>
+                                <img [src]="DisplayRankIconUrl(CalculateNextRankNum())" class="img-fluid">
                                 {{ CalculateNextRankNum() }} ({{ DisplayNextRankPercentage() }}%)
-                                <span [ngClass]="{'badge': true, 'bg-success': CalculateNextRankNum() - currentRankNum > 0, 'bg-warning': CalculateNextRankNum() - currentRankNum == 0}">{{ CalculateNextRankNum() - currentRankNum }}</span>
                             </span>
                         </td>
                     </tr>
-                    <tr>
+                    <tr class="align-middle">
                         <td>Max Possible Rank</td>
-                        <td class="font-monospace">{{ CalculateMaxNextRankNum() }}</td>
-                    </tr>
-                    <tr>
-                        <td>Max Possible Rating Gain</td>
-                        <td class="font-monospace">+{{ DisplayMaxRatingGain() }}</td>
+                        <td class="font-monospace">
+                            <span>
+                                <img [src]="DisplayRankIconUrl(CalculateMaxNextRankNum())" class="img-fluid">
+                                {{ CalculateMaxNextRankNum() }}
+                            </span>
+                        </td>
                     </tr>
                 </tbody>
             </table>
