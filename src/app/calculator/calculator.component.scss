@@ -4,7 +4,11 @@
     text-align: right;
 }
 
-.progressbar-milestone:last-child
-{
-    border: 0;
+.progressbar-milestone-button {
+    outline: none;
+    border: none;
+    background: none;
+    &:hover {
+        text-decoration: underline;
+    }
 }
