@@ -41,16 +41,6 @@ These are equal for all Ranks within the Bracket.
 | 1         | 7           | 10          | (175000-45000)/(40000-20000) = 6.5    |
 | 2         | 11          | 14          | (500000-175000)/(60000-40000) = 16.25 |
 
-## Dishonorable Kills
-What we know about the effects of DHKs:
-1. You lose 215 to 235 Rating instantly (seemingly random, average is 225)
-2. DHKs do not affect Honor in any way
-You have to /reload to see Rank changes in the Honor Tab of your character.
-
-Due to these facts and how the rest of the system works, you can minimize the amount of honor even further up to R13.
-Example: Being Rank 9 with 95% progress will award you more Rating as a Reward than if you're Rank 10 with 0% Progress.
-If you're planning to rank as fast as possible, you can even skip a week of progression this way, if you are below R10 and plan DHKs at the right times.
-
 ## Decay
 What we know about Decay:
 1. You will decay if you could not qualify for your current Rank
@@ -58,6 +48,7 @@ What we know about Decay:
 3. Decay will take away up to 2500 Rating Points (exact formular unknown)
 
 ## References
+- [Dishonorable Kills Change](https://us.forums.blizzard.com/en/wow/t/so-how-does-this-dishonorable-kill-system-work/1664598/38)
 - [WoW Classic Era 1.14.4 PvP Ranking Update Examples](https://eu.forums.blizzard.com/en/wow/t/wow-classic-era-1144-pvp-ranking-update-examples/463646)
 - [Classic Era 1.14.4 PvP Update](https://eu.forums.blizzard.com/en/wow/t/classic-era-1144-pvp-update/457615)
 - [Beastinblack-Firemaw's Calculation Google Doc](https://docs.google.com/spreadsheets/d/1vX1eXeDflKf7mC1PHm_5OhSKv6LjjjZEe3DzWHqyCKM/copy)

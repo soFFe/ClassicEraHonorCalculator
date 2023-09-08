@@ -30,7 +30,6 @@ export class RankData {
         [11, new Rank({ num: 11, cpRequirement: 45000, changeFactor: 0.5 })],
         [12, new Rank({ num: 12, cpRequirement: 50000, changeFactor: 0.4 })],
         [13, new Rank({ num: 13, cpRequirement: 55000, changeFactor: 0.4 })],
-        [14, new Rank({ num: 14, cpRequirement: 60000, changeFactor: 0.34 })],
-        [15, new Rank({ num: 15, cpRequirement: 65000, changeFactor: 0 })] // dummy
+        [14, new Rank({ num: 14, cpRequirement: 60000, changeFactor: 0.34 })]
     ]);
 }

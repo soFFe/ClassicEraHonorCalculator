@@ -124,8 +124,8 @@ export class CalculatorComponent implements OnInit {
             return 1; // you are always qualified for Rank 1
     }
 
-    DisplayNextRankPercentage(): number {
-        return Math.round(this.CalculateNextRankPercentage());
+    DisplayNextRankPercentage(): string {
+        return this.CalculateNextRankPercentage().toFixed(2);
     }
 
     DisplayQualificationMilestones(): QualificationMilestone[] {
@@ -224,6 +224,8 @@ export class CalculatorComponent implements OnInit {
                     {
                         throw new Error(`Could not find Rank ${rank.Num + 1} in RankMap`);
                     }
+                    
+                    cpSum += nextRank.CalculateRankQualificationReward(this.currentRank, this.rankProgress, rank);
                 }
                 continue;
             }
@@ -241,7 +243,7 @@ export class CalculatorComponent implements OnInit {
                 }
             }
 
-            cpSum += rank.CalculateRankQualificationReward(previousRank);
+            cpSum += rank.CalculateRankQualificationReward(this.currentRank, this.rankProgress, previousRank);
         }
 
         return cpSum;
@@ -273,7 +275,7 @@ export class CalculatorComponent implements OnInit {
             let nextRank = rankRequirementsMet[rankRequirementsMet.length - 1];
             let cpAboveRequirement = nextRating - nextRank.CpRequirement;
             let nextRankMaxCp = 0;
-            if (nextRank.Num == RankData.MaxRankNum) {
+            if (nextRank.Num >= RankData.MaxRankNum) {
                 nextRankMaxCp = RankData.MaxCp;
             }
             else {
