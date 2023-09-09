@@ -46,7 +46,7 @@ export class Rank {
         this.CpRequirement = cpRequirement;
         this.ChangeFactor = changeFactor;
         let conversionBracket = this.GetConversionBracket();
-        
+
         if (conversionBracket.Id == 0) {
             this.HonorRequirement = this.CpRequirement * conversionBracket.CpToHonorRate;
         }
@@ -76,10 +76,9 @@ export class Rank {
 
     public CalculateRankQualificationReward(currentRank: Rank, currentRankProgressPercentage: number, previousRank: Rank): number {
         let cpReward = (this.CpRequirement - previousRank.CpRequirement) * this.ChangeFactor;
-        if(currentRank.Num == previousRank.Num)
-        {
-            cpReward = (this.CpRequirement - previousRank.CpRequirement - (currentRankProgressPercentage / 100 * (this.CpRequirement - previousRank.CpRequirement))) * this.ChangeFactor;
-        }
+        // if (currentRank.Num == previousRank.Num) {
+        //     cpReward = (this.CpRequirement - previousRank.CpRequirement - (currentRankProgressPercentage / 100 * (this.CpRequirement - previousRank.CpRequirement))) * this.ChangeFactor;
+        // }
 
         return cpReward;
     }
