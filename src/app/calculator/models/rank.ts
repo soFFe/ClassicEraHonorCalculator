@@ -74,11 +74,19 @@ export class Rank {
         return RankData.ConversionBrackets[matchedBracket];
     }
 
-    public CalculateRankQualificationReward(currentRank: Rank, currentRankProgressPercentage: number, previousRank: Rank): number {
+    public CalculateRankQualificationReward(currentRankNum: number, currentRankProgressPercentage: number, previousRank: Rank): number {
         let cpReward = (this.CpRequirement - previousRank.CpRequirement) * this.ChangeFactor;
-        // if (currentRank.Num == previousRank.Num) {
-        //     cpReward = (this.CpRequirement - previousRank.CpRequirement - (currentRankProgressPercentage / 100 * (this.CpRequirement - previousRank.CpRequirement))) * this.ChangeFactor;
-        // }
+        if (currentRankNum == previousRank.Num) {
+            // V1
+            // cpReward = (this.CpRequirement - (previousRank.CpRequirement + currentRankProgressPercentage / 100 * (this.CpRequirement - previousRank.CpRequirement))) * this.ChangeFactor;
+            // V2
+            // cpReward = (this.CpRequirement - previousRank.CpRequirement) * (100 - currentRankProgressPercentage) / 100
+            // V3
+            cpReward = Math.min(
+                (this.CpRequirement - previousRank.CpRequirement) * this.ChangeFactor,
+                (this.CpRequirement - previousRank.CpRequirement) * (100 - currentRankProgressPercentage) / 100
+                );
+        }
 
         return cpReward;
     }

@@ -225,7 +225,7 @@ export class CalculatorComponent implements OnInit {
                         throw new Error(`Could not find Rank ${rank.Num + 1} in RankMap`);
                     }
                     
-                    cpSum += nextRank.CalculateRankQualificationReward(this.currentRank, this.rankProgress, rank);
+                    cpSum += nextRank.CalculateRankQualificationReward(this.currentRankNum, this.rankProgress, rank);
                 }
                 continue;
             }
@@ -243,7 +243,7 @@ export class CalculatorComponent implements OnInit {
                 }
             }
 
-            cpSum += rank.CalculateRankQualificationReward(this.currentRank, this.rankProgress, previousRank);
+            cpSum += rank.CalculateRankQualificationReward(this.currentRankNum, this.rankProgress, previousRank);
         }
 
         return cpSum;
