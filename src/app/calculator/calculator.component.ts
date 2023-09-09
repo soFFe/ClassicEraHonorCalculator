@@ -194,8 +194,8 @@ export class CalculatorComponent implements OnInit {
             return (this.currentRank.CpRequirement + ((RankData.MaxCp - this.currentRank.CpRequirement) * this.rankProgress / 100));
         }
         else {
-            let nNext: number = Number(this.currentRankNum) + 1;
-            let rNext: Rank | undefined = RankData.RankMap.get(nNext);
+            let nNext = Number(this.currentRankNum) + 1;
+            let rNext = RankData.RankMap.get(nNext);
             if (!rNext) {
                 throw new Error(`Could not find Rank ${nNext} in RankMap`);
             }
