@@ -1,1 +1,11 @@
-/* You can add global styles to this file, and also import other style files */
+@import "../node_modules/bootstrap/scss/functions";
+@import "../node_modules/bootstrap/scss/variables";
+
+$custom-colors: (
+  "discord": #7289da
+);
+
+// Merge the maps
+$theme-colors: map-merge($theme-colors, $custom-colors);
+
+@import '../node_modules/bootstrap/scss/bootstrap.scss';

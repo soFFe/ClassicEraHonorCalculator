@@ -1,4 +1,4 @@
-import { Rank } from "./rankdata";
+import { Rank } from "./rank";
 
 export class QualificationMilestone {
     HonorRequirement: number;

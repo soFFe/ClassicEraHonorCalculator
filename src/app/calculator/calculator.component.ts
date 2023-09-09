@@ -1,6 +1,7 @@
-import { Component, OnInit } from '@angular/core';
-import { ConversionBracket, Rank, RankData } from './rankdata';
-import { QualificationMilestone } from './qualificationMilestone';
+import { Component, OnInit, Output } from '@angular/core';
+import { RankData } from './models/rankdata';
+import { Rank } from './models/rank';
+import { QualificationMilestone } from './models/qualificationMilestone';
 
 @Component({
     selector: 'calculator-root',
@@ -69,9 +70,9 @@ export class CalculatorComponent implements OnInit {
     //#endregion
 
     qualificationMilestones: QualificationMilestone[];
-    ranks: Map<number, Rank> = RankData.RankMap;
+    ranks: Array<number> = Array.from(RankData.RankMap.keys()).filter(n => n <= RankData.MaxRankNum);
     currentRank: Rank;
-
+    
     constructor() {
         let rCurrent = RankData.RankMap.get(this.currentRankNum);
         if (!rCurrent) {
@@ -81,11 +82,27 @@ export class CalculatorComponent implements OnInit {
         this.currentRank = rCurrent;
         this.qualificationMilestones = this.DisplayQualificationMilestones();
     }
-    ngOnInit(): void { }
+    ngOnInit(): void {
+        
+    }
 
     //#region Display Methods
     DisplayMaxRatingGain(): number {
         return Math.round(this.CalculateMaxRatingGain());
+    }
+
+    DisplayNextRankIconUrl(): string {
+        return this.DisplayRankIconUrl(this.CalculateNextRankNum());
+    }
+
+    DisplayRankIconUrl(rankNum: number): string {
+        let rank = RankData.RankMap.get(rankNum);
+        if(!rank)
+        {
+            throw new Error(`Could not find Rank ${rankNum}} in RankMap`);
+        }
+
+        return rank.Icon;
     }
 
     DisplayQualifiedRank(): number {
@@ -94,7 +111,7 @@ export class CalculatorComponent implements OnInit {
         let initialLen = qualifiedRanks.length;
 
         for (let i = initialLen - 1; i >= 0; i--) {
-            // check if honor qualification checks out
+            // double check if honor qualification checks out
             if (this.honorFarmed < qualifiedRanks[i].HonorRequirement) {
                 // get outta here
                 qualifiedRanks.pop();
@@ -104,16 +121,16 @@ export class CalculatorComponent implements OnInit {
         if (qualifiedRanks.length > 0)
             return qualifiedRanks[qualifiedRanks.length - 1].Num;
         else
-            return 1;
+            return 1; // you are always qualified for Rank 1
     }
 
-    DisplayNextRankPercentage(): number {
-        return Math.round(this.CalculateNextRankPercentage());
+    DisplayNextRankPercentage(): string {
+        return this.CalculateNextRankPercentage().toFixed(2);
     }
 
     DisplayQualificationMilestones(): QualificationMilestone[] {
         let maxQualifiedRanks = Array.from(RankData.RankMap.values())
-            .filter(r => r.Num > this.currentRankNum && r.Num <= Math.min(this.currentRankNum + RankData.MaxRankQualifications, RankData.MaxRankNum));
+            .filter(r => r.Num >= this.currentRankNum && r.Num <= Math.min(this.currentRankNum + RankData.MaxRankQualifications, RankData.MaxRankNum), this);
 
         let milestones: QualificationMilestone[] = new Array();
         for (let i = 0; i < maxQualifiedRanks.length; i++) {
@@ -157,7 +174,7 @@ export class CalculatorComponent implements OnInit {
 
     CalculateMinimumHonorForMaxRatingGain(): number {
         let maxQualifiedRanks = Array.from(RankData.RankMap.values())
-            .filter(r => r.Num > this.currentRankNum && r.Num <= Math.min(this.currentRankNum + RankData.MaxRankQualifications, RankData.MaxRankNum));
+            .filter(r => r.Num > this.currentRankNum && r.Num <= Math.min(this.currentRankNum + RankData.MaxRankQualifications, RankData.MaxRankNum), this);
         if (maxQualifiedRanks.length > 0) {
             return this.currentRank.CalculateMinHonorForRankQualification(maxQualifiedRanks[maxQualifiedRanks.length - 1]);
         }
@@ -177,8 +194,8 @@ export class CalculatorComponent implements OnInit {
             return (this.currentRank.CpRequirement + ((RankData.MaxCp - this.currentRank.CpRequirement) * this.rankProgress / 100));
         }
         else {
-            let nNext: number = Number(this.currentRankNum) + 1;
-            let rNext: Rank | undefined = RankData.RankMap.get(nNext);
+            let nNext = Number(this.currentRankNum) + 1;
+            let rNext = RankData.RankMap.get(nNext);
             if (!rNext) {
                 throw new Error(`Could not find Rank ${nNext} in RankMap`);
             }
@@ -199,21 +216,39 @@ export class CalculatorComponent implements OnInit {
         for (let i = 0; i < qualifiedRanks.length; i++) {
             let rank = qualifiedRanks[i];
             if (rank.Num == this.currentRankNum) {
-                // we don't gain Rating for qualifying for the same rank
+                // we get the same amount of reward of the next rank by only qualifying for the current rank
+                if(qualifiedRanks.length == 1)
+                {
+                    let nextRank = RankData.RankMap.get(rank.Num + 1);
+                    if(!nextRank)
+                    {
+                        throw new Error(`Could not find Rank ${rank.Num + 1} in RankMap`);
+                    }
+                    
+                    cpSum += nextRank.CalculateRankQualificationReward(this.currentRankNum, this.rankProgress, rank);
+                }
                 continue;
             }
 
             let previousRank = RankData.RankMap.get(rank.Num - 1);
             if (!previousRank) {
-                // R14?
-                continue;
+                if(rank.Num > 1)
+                {
+                    throw new Error(`Could not find Rank ${rank.Num - 1} in RankMap`);
+                }
+                else
+                {
+                    // Rank 1s Reward is 0 anyway, no need to calculate anything
+                    continue;
+                }
             }
 
-            cpSum += rank.CalculateRankQualificationReward(previousRank);
+            cpSum += rank.CalculateRankQualificationReward(this.currentRankNum, this.rankProgress, previousRank);
         }
 
         return cpSum;
     }
+    
     CalculateNextRating(): number {
         let nextRating = this.CalculateCurrentRating() + this.CalculateRatingGain(this.CalculateQualifiedRanks(this.honorFarmed));
 
@@ -228,24 +263,25 @@ export class CalculatorComponent implements OnInit {
             return rankRequirementsMet[rankRequirementsMet.length - 1].Num;
         }
         else {
-            throw new Error("Could not calculate next rank");
+            throw new Error("Could not calculate next rank, as we have not met any Rank Requirements. This should never happen.");
         }
     }
 
     CalculateNextRankPercentage(): number {
         let nextRating = this.CalculateNextRating();
+
         let rankRequirementsMet = Array.from(RankData.RankMap.values()).filter(r => nextRating >= r.CpRequirement);
         if (rankRequirementsMet.length > 0) {
             let nextRank = rankRequirementsMet[rankRequirementsMet.length - 1];
             let cpAboveRequirement = nextRating - nextRank.CpRequirement;
             let nextRankMaxCp = 0;
-            if (nextRank.Num == RankData.MaxRankNum) {
+            if (nextRank.Num >= RankData.MaxRankNum) {
                 nextRankMaxCp = RankData.MaxCp;
             }
             else {
                 let plusOneRank = RankData.RankMap.get(nextRank.Num + 1);
                 if (!plusOneRank) {
-                    throw new Error("Could not calculate next ranks maximum CP");
+                    throw new Error(`Could not calculate next ranks maximum CP, because we could not find Rank ${nextRank.Num + 1} in RankMap`);
                 }
                 nextRankMaxCp = plusOneRank.CpRequirement;
             }
@@ -253,8 +289,7 @@ export class CalculatorComponent implements OnInit {
             return cpAboveRequirement / (nextRankMaxCp - nextRank.CpRequirement) * 100;
         }
         else {
-            console.debug("Could not calculate next rank");
-            return 0;
+            throw new Error("Could not calculate next rank percentage, as we have not met any Rank Requirements. This should never happen.")
         }
     }
 
@@ -266,14 +301,14 @@ export class CalculatorComponent implements OnInit {
             return rankRequirementsMet[rankRequirementsMet.length - 1].Num;
         }
         else {
-            throw new Error("Could not calculate next maximum rank");
+            throw new Error("Could not calculate next maximum rank, as we have not met any Rank Requirements. This should never happen.");
         }
     }
     //#endregion
     //#endregion
 
     //#region Copy to Clipboard
-    fallbackCopyTextToClipboard(text: string): void {
+    fallbackCopyTextToClipboard(text: string): boolean {
         var textArea = document.createElement("textarea");
         textArea.value = text;
 
@@ -286,26 +321,33 @@ export class CalculatorComponent implements OnInit {
         textArea.focus();
         textArea.select();
 
+        let retVal = false;
         try {
             var successful = document.execCommand('copy');
-            var msg = successful ? 'successful' : 'unsuccessful';
-            console.log('Fallback: Copying text command was ' + msg);
+            retVal = successful;
         } catch (err) {
             console.error('Fallback: Oops, unable to copy', err);
+            retVal = false;
         }
 
         document.body.removeChild(textArea);
+        return retVal;
     }
 
     copyTextToClipboard(text: string): void {
         if (!navigator.clipboard) {
-            this.fallbackCopyTextToClipboard(text);
-            return;
+            let success = this.fallbackCopyTextToClipboard(text);
+            if(!success)
+            {
+                throw new Error("Could not copy text");
+            }
         }
+
         navigator.clipboard.writeText(text).then(function () {
-            console.log('Copied to Clipboard');
+            // success
+            
         }, function (err) {
-            console.error('Could not copy text: ', err);
+            throw new Error('Could not copy text: ', err);
         });
     }
     //#endregion
@@ -320,7 +362,7 @@ export class CalculatorComponent implements OnInit {
         if (e.data == null)
             return;
 
-        let validRegEx = allowDecimalPoint ? /^[\d.]$/ : /^[\d]$/;
+        let validRegEx = allowDecimalPoint ? /^[\d.]+$/ : /^\d+$/;
 
         // remove invalid inputs
         if (!validRegEx.test(e.data)) {

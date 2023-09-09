@@ -4,7 +4,16 @@
     text-align: right;
 }
 
-.progressbar-milestone:last-child
+.progressbar-milestone-button {
+    outline: none;
+    border: none;
+    background: none;
+    padding: 0;
+    margin: 0;
+    height: 100%;
+}
+
+.progressbar-milestone:hover .progressbar-milestone-button>ng-icon
 {
-    border: 0;
+    opacity: 1;
 }
