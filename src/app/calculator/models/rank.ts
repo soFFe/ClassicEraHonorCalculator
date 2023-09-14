@@ -85,7 +85,7 @@ export class Rank {
             cpReward = Math.min(
                 (this.CpRequirement - previousRank.CpRequirement) * this.ChangeFactor,
                 (this.CpRequirement - previousRank.CpRequirement) * (100 - currentRankProgressPercentage) / 100
-                );
+            );
         }
 
         return cpReward;
