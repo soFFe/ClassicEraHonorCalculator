@@ -44,8 +44,9 @@ These are equal for all Ranks within the Bracket.
 ## Decay
 What we know about Decay:
 1. You will decay if you could not qualify for your current Rank
-2. You cannot downrank by Decay
-3. Decay will take away up to 2500 Rating Points (exact formular unknown)
+2. If you qualify for a Rank **at or above** your current one, there is **no decay**
+3. You cannot downrank by Decay
+4. Decay will take away up to 2500 Rating. Formula: ```NextWeekCp = CurrentCp - min(2500, CurrentCp - CurrentRankCpRequirement)```
 
 ## References
 - [Dishonorable Kills Change](https://us.forums.blizzard.com/en/wow/t/so-how-does-this-dishonorable-kill-system-work/1664598/38)

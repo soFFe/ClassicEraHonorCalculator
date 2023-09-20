@@ -1,7 +1,6 @@
-<div class="alert alert-danger" role="alert">
-    <p><strong>Update 2023-09-14:</strong> The predicted Rank Next Week is currently likely to be inaccurate. We have seen everybody between R6 and R12 get exactly 10% or exactly 20% more progress than expected. The cause of this is unknown.<br>
-        <strong>We have not seen anybody get less than what this Calculator predicts.</strong>
-        Please join the discord and provide your Honor Tab for the coming resets, so we can figure this out.</p>
+<div class="alert alert-warning" role="alert">
+    <p><strong>Update 2023-09-20:</strong> The predicted Rank Next Week is extremely unlikely to be inaccurate, but it's possible.
+        Please join the discord and provide your Honor Tab if you arrive at a different result than expected.</p>
     <p><a target="_blank" href="https://discord.gg/zev32q2eJg" class="btn btn-lg btn-discord text-white"><ng-icon name="bootstrapDiscord" size="32px" class="me-2"></ng-icon> Join</a></p>
 </div>
 
@@ -78,7 +77,7 @@
                     </tr>
                     <tr>
                         <td>Max Possible Rating</td>
-                        <td class="font-monospace">{{ CalculateNextRating() + DisplayMaxRatingGain() }}</td>
+                        <td class="font-monospace">{{ CalculateCurrentRating() + DisplayMaxRatingGain() }}</td>
                     </tr>
                     <tr class="align-middle">
                         <td>Rank</td>

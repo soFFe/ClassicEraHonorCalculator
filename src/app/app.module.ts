@@ -9,6 +9,7 @@ import { AppComponent } from './app.component';
 import { CalculatorComponent } from './calculator/calculator.component';
 import { HeaderComponent } from './header/header.component';
 import { FooterComponent } from './footer/footer.component';
+import { simpleCurseforge } from '@ng-icons/simple-icons';
 
 @NgModule({
   declarations: [
@@ -20,7 +21,7 @@ import { FooterComponent } from './footer/footer.component';
   imports: [
     BrowserModule,
     FormsModule,
-    NgIconsModule.withIcons({ bootstrapClipboard, bootstrapDiscord, bootstrapChevronDoubleRight, bootstrapGithub, bootstrapGraphUpArrow })
+    NgIconsModule.withIcons({ bootstrapClipboard, bootstrapDiscord, bootstrapChevronDoubleRight, bootstrapGithub, bootstrapGraphUpArrow, simpleCurseforge })
   ],
   providers: [],
   bootstrap: [AppComponent]

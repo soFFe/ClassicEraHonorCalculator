@@ -6,6 +6,7 @@ export class RankData {
     static MinRankNum: number = 1;
     static MaxHonor: number = 500000;
     static MaxCp: number = 60000;
+    static MaxDecayCp: number = 2500;
     static MaxRankQualifications: number = 4;
 
     // Reverse engineered Conversion Rates
@@ -32,4 +33,23 @@ export class RankData {
         [13, new Rank({ num: 13, cpRequirement: 55000, changeFactor: 0.4 })],
         [14, new Rank({ num: 14, cpRequirement: 60000, changeFactor: 0.34 })]
     ]);
+
+    static BonusCpMatrix: Record<'<=40Percent' | '>=50Percent', Record<number | 6 | 7 | 8 | 9 | 10 | 11, Array<number>>> = {
+        "<=40Percent": {
+            6:  [ 0,   0,   0,    500 ],
+            7:  [ 0,   0,   500,  500 ],
+            8:  [ 0,   500, 500,  1000 ],
+            9:  [ 500, 500, 1000, 1000 ],
+            10: [ 0,   500, 500,  500 ],
+            11: [ 0,   500, 500 ]
+        },
+        ">=50Percent": {
+            6:  [ 0,   0,   0,    500 ],
+            7:  [ 0,   0,   500,  500 ],
+            8:  [ 0,   500, 500,  1000 ],
+            9:  [ 0,   500, 500,  500 ],
+            10: [ 0,   500, 500,  500 ],
+            11: [ 0,   0,   0 ]
+        }
+    };
 }

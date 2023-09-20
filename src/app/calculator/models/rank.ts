@@ -77,11 +77,8 @@ export class Rank {
     public CalculateRankQualificationReward(currentRankNum: number, currentRankProgressPercentage: number, previousRank: Rank): number {
         let cpReward = (this.CpRequirement - previousRank.CpRequirement) * this.ChangeFactor;
         if (currentRankNum == previousRank.Num) {
-            // V1
-            // cpReward = (this.CpRequirement - (previousRank.CpRequirement + currentRankProgressPercentage / 100 * (this.CpRequirement - previousRank.CpRequirement))) * this.ChangeFactor;
-            // V2
-            // cpReward = (this.CpRequirement - previousRank.CpRequirement) * (100 - currentRankProgressPercentage) / 100
-            // V3
+            // "V3 Calculation"
+            // This calculation has been introduced to prevent gaming the system by farming Dishonorable Kills
             cpReward = Math.min(
                 (this.CpRequirement - previousRank.CpRequirement) * this.ChangeFactor,
                 (this.CpRequirement - previousRank.CpRequirement) * (100 - currentRankProgressPercentage) / 100
