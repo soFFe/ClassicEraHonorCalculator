@@ -16,6 +16,9 @@ MIT
 @ng-icons/core
 MIT
 
+@ng-icons/simple-icons
+CC0-1.0
+
 rxjs
 Apache-2.0
                                Apache License
