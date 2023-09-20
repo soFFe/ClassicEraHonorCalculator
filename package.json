@@ -20,7 +20,7 @@
     "@angular/forms": "^16.2.4",
     "@angular/platform-browser": "^16.2.5",
     "@angular/platform-browser-dynamic": "^16.2.4",
-    "@angular/router": "^16.2.4",
+    "@angular/router": "^16.2.5",
     "@ng-icons/bootstrap-icons": "^25.2.0",
     "@ng-icons/core": "^25.2.0",
     "bootstrap": "^5.3.1",
