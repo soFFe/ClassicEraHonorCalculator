@@ -258,8 +258,7 @@ export class CalculatorComponent implements OnInit {
 
             cpSum += this.CalculateBonusCp(qualifiedRanks);
         }
-        else
-        {
+        else {
             // Decay Calculation
             cpSum -= Math.min(RankData.MaxDecayCp, this.CalculateCurrentRating() - this.currentRank.CpRequirement);
         }
@@ -272,34 +271,13 @@ export class CalculatorComponent implements OnInit {
      * It probably serves the purpose to stay true to the original goal of "8 weeks from R0 to R14"
      */
     CalculateBonusCp(qualifiedRanks: Rank[]): number {
-        if (qualifiedRanks.length > 0 && this.currentRankNum >= 6 && this.currentRankNum <= 11) {
-            // qualifying for current rank grants you the first bucket for free
+        if (qualifiedRanks.length > 0 && this.currentRankNum >= 6 && this.currentRankNum <= 10) {
+            // qualifying for current rank grants you the first bucket for free, so the minimum amount of buckets here is 1
+            // because we have qualified at least for the current rank (qualifiedRanks.length > 0)
             let numBuckets = Math.max(qualifiedRanks.length - 1, 1);
             let bonusCp = 0;
-            if (this.rankProgress <= 40) {
-                let bonusBuckets = RankData.BonusCpMatrix["<=40Percent"][this.currentRankNum];
-                bonusCp = bonusBuckets[numBuckets - 1];
-
-            }
-            else if (this.rankProgress >= 50) {
-                let bonusBuckets = RankData.BonusCpMatrix[">=50Percent"][this.currentRankNum];
-                bonusCp = bonusBuckets[numBuckets - 1];
-            }
-            else {
-                // linearly interpolate between the two, if necessary
-                let bonusBucketsBelowFourty = RankData.BonusCpMatrix["<=40Percent"][this.currentRankNum];
-                let bonusBucketsAboveFifty = RankData.BonusCpMatrix[">=50Percent"][this.currentRankNum];
-
-                if (bonusBucketsAboveFifty != bonusBucketsBelowFourty) {
-                    // linear interpolation
-                    let interpolatePoint = this.clamp(this.remap(this.rankProgress, 40, 50, 0, 1), 0, 1);
-                    bonusCp = this.lerp(bonusBucketsBelowFourty[numBuckets - 1], bonusBucketsAboveFifty[numBuckets - 1], interpolatePoint);
-                }
-                else {
-                    // no interpolation necessary
-                    bonusCp = bonusBucketsBelowFourty[numBuckets - 1];
-                }
-            }
+            let bonusBuckets = RankData.BonusCpMatrix[this.currentRankNum];
+            bonusCp = bonusBuckets[numBuckets - 1];
 
             return bonusCp;
         }
@@ -311,7 +289,7 @@ export class CalculatorComponent implements OnInit {
         let nextRating = this.CalculateCurrentRating() + this.CalculateRatingGain(this.CalculateQualifiedRanks(this.honorFarmed));
 
         // Prevent Derank from Decay
-        if(nextRating < this.currentRank.CpRequirement)
+        if (nextRating < this.currentRank.CpRequirement)
             nextRating = this.currentRank.CpRequirement;
 
         return nextRating;
@@ -427,13 +405,11 @@ export class CalculatorComponent implements OnInit {
         let nextVal = "";
         let validRegEx = allowDecimalPoint ? /^\d+(?:[,.])?(?:\d+)?$/ : /^\d+$/;
 
-        if(elInput.selectionStart)
-        {
+        if (elInput.selectionStart) {
             nextVal += elInput.value.substring(0, elInput.selectionStart)
         }
         nextVal += (e.data ?? "")
-        if(elInput.selectionEnd)
-        {
+        if (elInput.selectionEnd) {
             nextVal += elInput.value.substring(elInput.selectionEnd);
         }
 
@@ -464,7 +440,7 @@ export class CalculatorComponent implements OnInit {
         }
     }
     //#endregion
-    
+
     //#region Helpers
     // https://gist.github.com/mimshins/04ed97a1c6301f248b23509a1be731b5
     /**

@@ -76,11 +76,22 @@ export class Rank {
 
     public CalculateRankQualificationReward(currentRankNum: number, currentRankProgressPercentage: number, previousRank: Rank): number {
         let cpReward = (this.CpRequirement - previousRank.CpRequirement) * this.ChangeFactor;
-        if (currentRankNum == previousRank.Num) {
-            // "V3 Calculation"
+        if (currentRankNum == previousRank.Num) { // first bucket
+            // "V4 Calculation"
             // This calculation has been introduced to prevent gaming the system by farming Dishonorable Kills
+            let cpCutOff = (this.CpRequirement - previousRank.CpRequirement) * this.ChangeFactor;
+            switch (currentRankNum) {
+                // special cases for the first bucket calculations of R9 and R11
+                case 9:
+                    cpCutOff = 3000;
+                    break;
+                case 11:
+                    cpCutOff = 2500;
+                    break;
+            }
+
             cpReward = Math.min(
-                (this.CpRequirement - previousRank.CpRequirement) * this.ChangeFactor,
+                cpCutOff,
                 (this.CpRequirement - previousRank.CpRequirement) * (100 - currentRankProgressPercentage) / 100
             );
         }
