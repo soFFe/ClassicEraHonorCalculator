@@ -46,7 +46,7 @@
                 <tbody>
                     <tr>
                         <td>Rating</td>
-                        <td class="font-monospace">{{ CalculateCurrentRating() }}</td>
+                        <td class="font-monospace">{{ DisplayCurrentRating() }}</td>
                     </tr>
                     <tr>
                         <td>Qualified Rank</td>
@@ -67,17 +67,17 @@
                             <!-- TODO: Placeholder until Decay gets implemented -->
                             <span class="badge bg-danger" *ngIf="CalculateNextRating() - CalculateCurrentRating() <= 0">Decaying</span>
                             <span *ngIf="CalculateNextRating() - CalculateCurrentRating() > 0">
-                                {{ CalculateNextRating() }}
+                                {{ DisplayNextRating() }}
                                 <span [ngClass]="{'badge': true, 'bg-success': CalculateNextRating() - CalculateCurrentRating() > 0, 'bg-danger': CalculateNextRating() - CalculateCurrentRating() <= 0}">
                                     <span *ngIf="CalculateNextRating() - CalculateCurrentRating() >= 0">+</span>
-                                    {{ CalculateNextRating() - CalculateCurrentRating() }}
+                                    {{ DisplayRatingChange() }}
                                 </span>
                             </span>
                         </td>
                     </tr>
                     <tr>
                         <td>Max Possible Rating</td>
-                        <td class="font-monospace">{{ CalculateCurrentRating() + DisplayMaxRatingGain() }}</td>
+                        <td class="font-monospace">{{ DisplayCurrentRating() + DisplayMaxRatingGain() }}</td>
                     </tr>
                     <tr class="align-middle">
                         <td>Rank</td>

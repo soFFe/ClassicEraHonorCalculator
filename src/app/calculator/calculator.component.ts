@@ -1,4 +1,4 @@
-import { Component, OnInit, Output } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { RankData } from './models/rankdata';
 import { Rank } from './models/rank';
 import { QualificationMilestone } from './models/qualificationMilestone';
@@ -41,12 +41,13 @@ export class CalculatorComponent implements OnInit {
     public get rankProgress(): number {
         return this._rankProgress;
     }
-    public set rankProgress(value: number) {
-        if (isNaN(value))
+    public set rankProgress(value: string) {
+        value = value.replaceAll(/,/g, '.');
+        if (isNaN(Number(value)))
             this._rankProgress = 0;
-        else if (value < 0)
+        else if (Number(value) < 0)
             this._rankProgress = 0;
-        else if (value > 100)
+        else if (Number(value) > 100)
             this._rankProgress = 100;
         else
             this._rankProgress = Number(value);
@@ -145,6 +146,18 @@ export class CalculatorComponent implements OnInit {
         }
 
         return milestones;
+    }
+
+    DisplayCurrentRating(): number {
+        return Math.round(this.CalculateCurrentRating());
+    }
+
+    DisplayNextRating(): number {
+        return Math.round(this.CalculateNextRating());
+    }
+
+    DisplayRatingChange(): number {
+        return Math.round(this.CalculateNextRating() - this.CalculateCurrentRating());
     }
 
     //#endregion
@@ -410,10 +423,22 @@ export class CalculatorComponent implements OnInit {
         if (e.data == null)
             return;
 
-        let validRegEx = allowDecimalPoint ? /^[\d.]+$/ : /^\d+$/;
+        let elInput = <HTMLInputElement>e.target;
+        let nextVal = "";
+        let validRegEx = allowDecimalPoint ? /^\d+(?:[,.])?(?:\d+)?$/ : /^\d+$/;
+
+        if(elInput.selectionStart)
+        {
+            nextVal += elInput.value.substring(0, elInput.selectionStart)
+        }
+        nextVal += (e.data ?? "")
+        if(elInput.selectionEnd)
+        {
+            nextVal += elInput.value.substring(elInput.selectionEnd);
+        }
 
         // remove invalid inputs
-        if (!validRegEx.test(e.data)) {
+        if (!validRegEx.test(nextVal)) {
             e.preventDefault();
             return;
         }
@@ -439,6 +464,7 @@ export class CalculatorComponent implements OnInit {
         }
     }
     //#endregion
+    
     //#region Helpers
     // https://gist.github.com/mimshins/04ed97a1c6301f248b23509a1be731b5
     /**
