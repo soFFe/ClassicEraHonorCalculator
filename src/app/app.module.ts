@@ -11,7 +11,7 @@ import { HeaderComponent } from './header/header.component';
 import { FooterComponent } from './footer/footer.component';
 import { simpleCurseforge } from '@ng-icons/simple-icons';
 import { AppRoutingModule } from './app-routing.module';
-import { WeekPlanningComponent } from './week-planning/week-planning.component';
+import { ProgressionPlanningComponent } from './progression-planning/progression-planning.component';
 
 @NgModule({
   declarations: [
@@ -19,7 +19,7 @@ import { WeekPlanningComponent } from './week-planning/week-planning.component';
     CalculatorComponent,
     HeaderComponent,
     FooterComponent,
-    WeekPlanningComponent
+    ProgressionPlanningComponent
   ],
   imports: [
     BrowserModule,

@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { CalculatorComponent } from './calculator/calculator.component';
-import { WeekPlanningComponent } from './week-planning/week-planning.component';
+import { ProgressionPlanningComponent } from './progression-planning/progression-planning.component';
 
 const appRoutes: Routes = [
     {
@@ -10,8 +10,8 @@ const appRoutes: Routes = [
         component: CalculatorComponent
     },
     {
-        path: 'week-planning',
-        component: WeekPlanningComponent
+        path: 'progression-planning',
+        component: ProgressionPlanningComponent
     },
     { path: '', redirectTo: '/calculator/1/0/0', pathMatch: 'full' },
     // { path: '**', redirectTo: '/calculator/1/0/0' }
