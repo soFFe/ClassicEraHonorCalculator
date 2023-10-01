@@ -10,7 +10,7 @@ import { ActivatedRoute, Router } from '@angular/router';
     templateUrl: './calculator.component.html',
     styleUrls: ['./calculator.component.scss']
 })
-export class CalculatorComponent implements OnInit {
+export class CalculatorComponent {
     //#region currentRankNum
     private _currentRankNum: number = 1;
     public get currentRankNum(): number {
@@ -97,9 +97,6 @@ export class CalculatorComponent implements OnInit {
 
         this.currentRank = rCurrent;
         this.qualificationMilestones = this.DisplayQualificationMilestones();
-    }
-
-    ngOnInit(): void {
     }
 
     //#region Display Methods
