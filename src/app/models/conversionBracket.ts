@@ -1,6 +1,3 @@
-import { Rank } from "./rank";
-import { RankData } from "./rankdata";
-
 export class ConversionBracket {
     private _Id!: number;
     private _MinRankNum!: number;

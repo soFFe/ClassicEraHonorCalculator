@@ -1,9 +1,8 @@
-import { Component, Input, OnInit } from '@angular/core';
-import { RankData } from './models/rankdata';
-import { Rank } from './models/rank';
-import { QualificationMilestone } from './models/qualificationMilestone';
-import { Location } from '@angular/common';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Component, Input } from '@angular/core';
+import { RankData } from '../models/rankdata';
+import { Rank } from '../models/rank';
+import { QualificationMilestone } from '../models/qualificationMilestone';
+import { Router } from '@angular/router';
 
 @Component({
     selector: 'calculator-root',
