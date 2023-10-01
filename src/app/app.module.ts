@@ -10,18 +10,22 @@ import { CalculatorComponent } from './calculator/calculator.component';
 import { HeaderComponent } from './header/header.component';
 import { FooterComponent } from './footer/footer.component';
 import { simpleCurseforge } from '@ng-icons/simple-icons';
+import { AppRoutingModule } from './app-routing.module';
+import { WeekPlanningComponent } from './week-planning/week-planning.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     CalculatorComponent,
     HeaderComponent,
-    FooterComponent
+    FooterComponent,
+    WeekPlanningComponent
   ],
   imports: [
     BrowserModule,
     FormsModule,
-    NgIconsModule.withIcons({ bootstrapClipboard, bootstrapDiscord, bootstrapChevronDoubleRight, bootstrapGithub, bootstrapGraphUpArrow, simpleCurseforge })
+    NgIconsModule.withIcons({ bootstrapClipboard, bootstrapDiscord, bootstrapChevronDoubleRight, bootstrapGithub, bootstrapGraphUpArrow, simpleCurseforge }),
+    AppRoutingModule
   ],
   providers: [],
   bootstrap: [AppComponent]

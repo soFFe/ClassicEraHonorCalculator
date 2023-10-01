@@ -1,7 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { RankData } from './models/rankdata';
 import { Rank } from './models/rank';
 import { QualificationMilestone } from './models/qualificationMilestone';
+import { Location } from '@angular/common';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
     selector: 'calculator-root',
@@ -14,6 +16,8 @@ export class CalculatorComponent implements OnInit {
     public get currentRankNum(): number {
         return this._currentRankNum;
     }
+    
+    @Input()
     public set currentRankNum(value: number) {
         if (isNaN(value)) {
             this._currentRankNum = RankData.MinRankNum;
@@ -34,6 +38,7 @@ export class CalculatorComponent implements OnInit {
 
         this.currentRank = rCurrent;
         this.qualificationMilestones = this.DisplayQualificationMilestones();
+        this.updateUrl();
     }
     //#endregion
     //#region rankProgress
@@ -41,8 +46,12 @@ export class CalculatorComponent implements OnInit {
     public get rankProgress(): number {
         return this._rankProgress;
     }
+
+    @Input()
     public set rankProgress(value: string) {
-        value = value.replaceAll(/,/g, '.');
+        if(value != undefined)
+            value = value.replaceAll(/,/g, '.');
+        
         if (isNaN(Number(value)))
             this._rankProgress = 0;
         else if (Number(value) < 0)
@@ -51,6 +60,8 @@ export class CalculatorComponent implements OnInit {
             this._rankProgress = 100;
         else
             this._rankProgress = Number(value);
+
+        this.updateUrl();
     }
     //#endregion
     //#region honorFarmed
@@ -58,6 +69,8 @@ export class CalculatorComponent implements OnInit {
     public get honorFarmed(): number {
         return this._honorFarmed;
     }
+
+    @Input()
     public set honorFarmed(value: number) {
         if (isNaN(value))
             this._honorFarmed = 0;
@@ -67,6 +80,8 @@ export class CalculatorComponent implements OnInit {
             this._honorFarmed = RankData.MaxHonor
         else
             this._honorFarmed = Number(value);
+
+        this.updateUrl();
     }
     //#endregion
 
@@ -74,7 +89,7 @@ export class CalculatorComponent implements OnInit {
     ranks: Array<number> = Array.from(RankData.RankMap.keys()).filter(n => n <= RankData.MaxRankNum);
     currentRank: Rank;
 
-    constructor() {
+    constructor(private router: Router) {
         let rCurrent = RankData.RankMap.get(this.currentRankNum);
         if (!rCurrent) {
             throw new Error(`Could not find Rank ${this.currentRankNum} in RankMap`);
@@ -83,8 +98,8 @@ export class CalculatorComponent implements OnInit {
         this.currentRank = rCurrent;
         this.qualificationMilestones = this.DisplayQualificationMilestones();
     }
-    ngOnInit(): void {
 
+    ngOnInit(): void {
     }
 
     //#region Display Methods
@@ -468,5 +483,9 @@ export class CalculatorComponent implements OnInit {
     ) => this.lerp(rMin, rMax, this.inLerp(oMin, oMax, v));
 
     clamp = (a: number, min: number, max: number) => Math.min(max, Math.max(min, a));
+
+    updateUrl(): void {
+        this.router.navigate([ "/calculator", this.currentRankNum, this.rankProgress, this.honorFarmed ]);
+    }
     //#endregion
 }
