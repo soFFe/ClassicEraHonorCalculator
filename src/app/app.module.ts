@@ -12,6 +12,7 @@ import { FooterComponent } from './footer/footer.component';
 import { simpleCurseforge } from '@ng-icons/simple-icons';
 import { AppRoutingModule } from './app-routing.module';
 import { ProgressionPlanningComponent } from './progression-planning/progression-planning.component';
+import { CountdownModule } from 'ngx-countdown';
 
 @NgModule({
   declarations: [
@@ -25,6 +26,7 @@ import { ProgressionPlanningComponent } from './progression-planning/progression
     BrowserModule,
     FormsModule,
     NgIconsModule.withIcons({ bootstrapClipboard, bootstrapDiscord, bootstrapChevronDoubleRight, bootstrapGithub, bootstrapGraphUpArrow, simpleCurseforge }),
+    CountdownModule,
     AppRoutingModule
   ],
   providers: [],

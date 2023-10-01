@@ -1,26 +1,37 @@
 <div class="header">
     <div class="container bg-black bg-opacity-50 rounded-top-pill p-2">
-        <h1 class="text-center">Classic Era Honor Calculator</h1>
+        <div class="row">
+            <div class="col-12 col-md-2 d-flex flex-wrap justify-content-center justify-content-md-end align-content-center">
+                <p class="mb-0 text-end">🇪🇺 <span id="euResetTime"><countdown #euCd [config]="euResetTimerConfig"></countdown></span></p>
+            </div>
+            <div class="col-12 col-md-7">
+                <h1 class="text-center">Classic Era Honor Calculator</h1>
+            </div>
+            <div class="col-12 col-md-2 d-flex flex-wrap justify-content-center justify-content-md-start align-content-center">
+                <p class="mb-0 text-start">🇺🇸 <span id="naResetTime"><countdown #naCd [config]="naResetTimerConfig"></countdown></span></p>
+            </div>
+        </div>
     </div>
 </div>
 
 <nav class="navbar navbar-expand-lg bg-body-tertiary">
     <div class="container-fluid">
-      <a class="navbar-brand" href="#">
-        <img src="assets/r14.png" alt="Logo" height="32" class="d-inline-block align-text-top">
-      </a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse" id="navbarNav">
-        <ul class="navbar-nav">
-          <li class="nav-item">
-            <a class="nav-link" routerLink="/calculator/1/0/0" routerLinkActive="active">Calculator</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" routerLink="/week-planning" routerLinkActive="active">Week Planning</a>
-          </li>
-        </ul>
-      </div>
+        <a class="navbar-brand" href="#">
+            <img src="assets/r14.png" alt="Logo" height="32" class="d-inline-block align-text-top">
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link" routerLink="/calculator/1/0/0" routerLinkActive="active">Calculator</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" routerLink="/progression-planning" routerLinkActive="active">Progression Planning</a>
+                </li>
+            </ul>
+        </div>
     </div>
-  </nav>
+</nav>
