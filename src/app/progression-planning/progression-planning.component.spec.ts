@@ -6,6 +6,8 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgChartsModule } from 'ng2-charts';
 import { CountdownModule } from 'ngx-countdown';
 import { AppRoutingModule } from '../app-routing.module';
+import { bootstrapDash, bootstrapPlus } from '@ng-icons/bootstrap-icons';
+import { NgIconsModule } from '@ng-icons/core';
 
 describe('ProgressionPlanningComponent', () => {
   let component: ProgressionPlanningComponent;
@@ -20,7 +22,8 @@ describe('ProgressionPlanningComponent', () => {
         FormsModule,
         CountdownModule,
         AppRoutingModule,
-        NgChartsModule
+        NgChartsModule,
+        NgIconsModule.withIcons({ bootstrapDash, bootstrapPlus})
       ],
     });
     fixture = TestBed.createComponent(ProgressionPlanningComponent);
