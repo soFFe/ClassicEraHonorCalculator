@@ -318,7 +318,6 @@ export class ProgressionPlanningComponent {
                 if (set.data != null) {
                     const data = set.data.map(d => Number(d));
                     const maxValue = Math.max(...data);
-                    console.log(data);
                     const maxValIndex = data.indexOf(maxValue);
 
                     annotations.push({
@@ -333,7 +332,6 @@ export class ProgressionPlanningComponent {
                         borderWidth: 2,
                         borderDash: [5, 10]
                     });
-                    console.log(maxValIndex);
                 }
             });
         }

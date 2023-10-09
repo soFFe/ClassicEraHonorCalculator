@@ -32,7 +32,7 @@ const appRoutes: Routes = [
             {
                 bindToComponentInputs: true,
                 onSameUrlNavigation: 'reload',
-                enableTracing: true // true = debug routing
+                enableTracing: false // true = debug routing
             }
         )
     ],

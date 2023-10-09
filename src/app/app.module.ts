@@ -29,7 +29,6 @@ import { NgChartsModule } from 'ng2-charts';
     AppRoutingModule,
     NgChartsModule
   ],
-  providers: [],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
