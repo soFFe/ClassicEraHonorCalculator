@@ -5,7 +5,10 @@ import { ProgressionPlanningComponent } from './progression-planning/progression
 
 const appRoutes: Routes = [
     {
-        pathMatch: 'full',
+        path: 'calculator',
+        component: CalculatorComponent
+    },
+    {
         path: 'calculator/:currentRankNum/:rankProgress/:honorFarmed',
         component: CalculatorComponent
     },
@@ -13,8 +16,12 @@ const appRoutes: Routes = [
         path: 'progression-planning',
         component: ProgressionPlanningComponent
     },
-    { path: '', redirectTo: '/calculator/1/0/0', pathMatch: 'full' },
-    { path: '**', redirectTo: '/calculator/1/0/0' }
+    {
+        path: 'progression-planning/:currentRankNum/:rankProgress/:numWeeks/:honorGoal',
+        component: ProgressionPlanningComponent
+    },
+    { pathMatch: 'full', path: '', redirectTo: '/calculator' },
+    { path: '**', redirectTo: '/calculator' }
 ];
 
 @NgModule({
@@ -25,7 +32,7 @@ const appRoutes: Routes = [
             {
                 bindToComponentInputs: true,
                 onSameUrlNavigation: 'reload',
-                enableTracing: false // true = debug routing
+                enableTracing: true // true = debug routing
             }
         )
     ],

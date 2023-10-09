@@ -1,0 +1,57 @@
+<div class="row mt-3">
+    <form>
+        <div class="row">
+            <div class="col">
+                <label for="currentRankNum">Starting Rank</label>
+                <div class="input-group input-group-lg">
+                    <div class="input-group-text"><img [src]="'assets/rank-icons/' + currentRankNum + '.webp'"></div>
+                    <select class="form-select form-select-lg" [(ngModel)]="currentRankNum" name="currentRankNum"
+                        id="currentRankNum">
+                        <option *ngFor="let n of ranks" [ngValue]="n">
+                            Rank {{ n }}
+                        </option>
+                    </select>
+                </div>
+            </div>
+            <div class="col">
+                <label for="rankProgress">Starting Rank Progress (%)</label>
+                <div class="input-group input-group-lg">
+                    <input type="text" [(ngModel)]="rankProgress"
+                        (beforeinput)="validateNumberBeforeInput($event, true)"
+                        (change)="validateNumberOnChange($event, 0, 100)" class="form-control font-monospace"
+                        name="rankProgress" autocomplete="off" id="rankProgress" [placeholder]="rankProgress">
+                </div>
+            </div>
+        </div>
+        <div class="row mt-2">
+            <div class="col">
+                <label for="numWeeks"># of Weeks</label>
+                <div class="input-group input-group-lg">
+                    <input type="text" [(ngModel)]="numWeeks"
+                    (beforeinput)="validateNumberBeforeInput($event, false)"
+                    (change)="validateNumberOnChange($event, 0, 50)" class="form-control font-monospace"
+                    name="numWeeks" autocomplete="off" id="numWeeks" [placeholder]="numWeeks">
+                    <button class="btn btn-danger" type="button" (click)="numWeeks = numWeeks - 1">
+                        <ng-icon name="bootstrapDash" class="d-flex"></ng-icon>
+                    </button>
+                    <button class="btn btn-success" type="button" (click)="numWeeks = numWeeks + 1">
+                        <ng-icon name="bootstrapPlus" class="d-flex"></ng-icon>
+                    </button>
+                </div>
+            </div>
+            <div class="col">
+                <label for="resetDay">Static Honor Goal</label>
+                <div class="input-group input-group-lg">
+                    <input type="text" [(ngModel)]="honorGoal"
+                    (beforeinput)="validateNumberBeforeInput($event, false)"
+                    (change)="validateNumberOnChange($event, 0, 500000)" class="form-control font-monospace"
+                    name="honorGoal" autocomplete="off" id="honorGoal" [placeholder]="honorGoal">
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+<div class="canvas-wrapper" style="height: 500px;">
+    <canvas baseChart [type]="'line'" [data]="progressionChartData" [options]="progressionChartOptions"
+        [legend]="true"></canvas>
+</div>

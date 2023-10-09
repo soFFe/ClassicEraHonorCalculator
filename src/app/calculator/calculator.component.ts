@@ -1,13 +1,14 @@
 import { Component, Input } from '@angular/core';
-import { RankData } from '../models/rankdata';
 import { Rank } from '../models/rank';
 import { QualificationMilestone } from '../models/qualificationMilestone';
 import { Router } from '@angular/router';
+import { CalculationService } from '../services/calculation.service';
 
 @Component({
     selector: 'calculator-root',
     templateUrl: './calculator.component.html',
-    styleUrls: ['./calculator.component.scss']
+    styleUrls: ['./calculator.component.scss'],
+    providers: [CalculationService]
 })
 export class CalculatorComponent {
     //#region currentRankNum
@@ -19,18 +20,18 @@ export class CalculatorComponent {
     @Input()
     public set currentRankNum(value: number) {
         if (isNaN(value)) {
-            this._currentRankNum = RankData.MinRankNum;
+            this._currentRankNum = Rank.MinRankNum;
         }
-        else if (value < RankData.MinRankNum) {
-            this._currentRankNum = RankData.MinRankNum;
+        else if (value < Rank.MinRankNum) {
+            this._currentRankNum = Rank.MinRankNum;
         }
-        else if (value > RankData.MaxRankNum) {
-            this._currentRankNum = RankData.MaxRankNum;
+        else if (value > Rank.MaxRankNum) {
+            this._currentRankNum = Rank.MaxRankNum;
         } else {
             this._currentRankNum = Number(value);
         }
 
-        let rCurrent = RankData.RankMap.get(this.currentRankNum);
+        const rCurrent = Rank.RankMap.get(this.currentRankNum);
         if (!rCurrent) {
             throw new Error(`Could not find Rank ${this.currentRankNum} in RankMap`);
         }
@@ -75,8 +76,8 @@ export class CalculatorComponent {
             this._honorFarmed = 0;
         else if (value < 0)
             this._honorFarmed = 0;
-        else if (value > RankData.MaxHonor)
-            this._honorFarmed = RankData.MaxHonor
+        else if (value > Rank.MaxHonor)
+            this._honorFarmed = Rank.MaxHonor
         else
             this._honorFarmed = Number(value);
 
@@ -85,11 +86,11 @@ export class CalculatorComponent {
     //#endregion
 
     qualificationMilestones: QualificationMilestone[];
-    ranks: Array<number> = Array.from(RankData.RankMap.keys()).filter(n => n <= RankData.MaxRankNum);
+    ranks: Array<number> = Array.from(Rank.RankMap.keys()).filter(n => n <= Rank.MaxRankNum);
     currentRank: Rank;
 
-    constructor(private router: Router) {
-        let rCurrent = RankData.RankMap.get(this.currentRankNum);
+    constructor(private router: Router, private calculationService: CalculationService) {
+        const rCurrent = Rank.RankMap.get(this.currentRankNum);
         if (!rCurrent) {
             throw new Error(`Could not find Rank ${this.currentRankNum} in RankMap`);
         }
@@ -100,15 +101,15 @@ export class CalculatorComponent {
 
     //#region Display Methods
     DisplayMaxRatingGain(): number {
-        return Math.round(this.CalculateMaxRatingGain());
+        return Math.round(this.calculationService.CalculateMaxRatingGain(this.currentRank, this.rankProgress));
     }
 
     DisplayNextRankIconUrl(): string {
-        return this.DisplayRankIconUrl(this.CalculateNextRankNum());
+        return this.DisplayRankIconUrl(this.calculationService.CalculateNextRankNum(this.currentRank, this.rankProgress, this.honorFarmed));
     }
 
     DisplayRankIconUrl(rankNum: number): string {
-        let rank = RankData.RankMap.get(rankNum);
+        const rank = Rank.RankMap.get(rankNum);
         if (!rank) {
             throw new Error(`Could not find Rank ${rankNum}} in RankMap`);
         }
@@ -117,9 +118,9 @@ export class CalculatorComponent {
     }
 
     DisplayQualifiedRank(): number {
-        let qualifiedRanks = Array.from(RankData.RankMap.values())
-            .filter(r => r.Num <= Math.min(this.currentRankNum + RankData.MaxRankQualifications, RankData.MaxRankNum), this);
-        let initialLen = qualifiedRanks.length;
+        const qualifiedRanks = Array.from(Rank.RankMap.values())
+            .filter(r => r.Num <= Math.min(this.currentRankNum + Rank.MaxRankQualifications, Rank.MaxRankNum), this);
+        const initialLen = qualifiedRanks.length;
 
         for (let i = initialLen - 1; i >= 0; i--) {
             // double check if honor qualification checks out
@@ -136,16 +137,16 @@ export class CalculatorComponent {
     }
 
     DisplayNextRankPercentage(): string {
-        return this.CalculateNextRankPercentage().toFixed(2);
+        return this.calculationService.CalculateNextRankPercentage(this.currentRank, this.rankProgress, this.honorFarmed).toFixed(2);
     }
 
     DisplayQualificationMilestones(): QualificationMilestone[] {
-        let maxQualifiedRanks = Array.from(RankData.RankMap.values())
-            .filter(r => r.Num >= this.currentRankNum && r.Num <= Math.min(this.currentRankNum + RankData.MaxRankQualifications, RankData.MaxRankNum), this);
+        const maxQualifiedRanks = Array.from(Rank.RankMap.values())
+            .filter(r => r.Num >= this.currentRankNum && r.Num <= Math.min(this.currentRankNum + Rank.MaxRankQualifications, Rank.MaxRankNum), this);
 
-        let milestones: QualificationMilestone[] = new Array();
+        const milestones: QualificationMilestone[] = [];
         for (let i = 0; i < maxQualifiedRanks.length; i++) {
-            let ms = new QualificationMilestone(maxQualifiedRanks[i], maxQualifiedRanks[maxQualifiedRanks.length - 1])
+            const ms = new QualificationMilestone(maxQualifiedRanks[i], maxQualifiedRanks[maxQualifiedRanks.length - 1])
             milestones.push(ms);
         }
 
@@ -160,207 +161,37 @@ export class CalculatorComponent {
     }
 
     DisplayCurrentRating(): number {
-        return Math.round(this.CalculateCurrentRating());
+        return Math.round(this.calculationService.CalculateCurrentRating(this.currentRank, this.rankProgress));
     }
 
     DisplayNextRating(): number {
-        return Math.round(this.CalculateNextRating());
+        return Math.round(this.calculationService.CalculateNextRating(this.currentRank, this.rankProgress, this.honorFarmed));
     }
 
     DisplayRatingChange(): number {
-        return Math.round(this.CalculateNextRating() - this.CalculateCurrentRating());
+        return Math.round(this.calculationService.CalculateNextRating(this.currentRank, this.rankProgress, this.honorFarmed) - this.calculationService.CalculateCurrentRating(this.currentRank, this.rankProgress));
     }
 
-    //#endregion
-
-    //#region Calculation Methods
-    CalculateHonorFarmProgress(): number {
-        let honorProgressPercentage = this.honorFarmed / this.CalculateMinimumHonorForMaxRatingGain() * 100;
-        return Math.min(honorProgressPercentage, 100);
+    DisplayNextRankNum(): number {
+        return this.calculationService.CalculateNextRankNum(this.currentRank, this.rankProgress, this.honorFarmed);
     }
 
-    CalculateQualifiedRanks(honor: number): Rank[] {
-        let maxQualifiedRanks = Array.from(RankData.RankMap.values())
-            .filter(r => r.Num >= this.currentRankNum && r.Num <= Math.min(this.currentRankNum + RankData.MaxRankQualifications, RankData.MaxRankNum), this);
-        let initialLen = maxQualifiedRanks.length;
-
-        for (let i = initialLen - 1; i >= 0; i--) {
-            // check if honor qualification checks out
-            if (honor < maxQualifiedRanks[i].HonorRequirement) {
-                // get outta here
-                maxQualifiedRanks.pop();
-            }
-        }
-
-        return maxQualifiedRanks;
+    DisplayMaxNextRankNum(): number {
+        return this.calculationService.CalculateMaxNextRankNum(this.currentRank, this.rankProgress);
     }
 
-    CalculateMinimumHonorForMaxRatingGain(): number {
-        let maxQualifiedRanks = Array.from(RankData.RankMap.values())
-            .filter(r => r.Num > this.currentRankNum && r.Num <= Math.min(this.currentRankNum + RankData.MaxRankQualifications, RankData.MaxRankNum), this);
-        if (maxQualifiedRanks.length > 0) {
-            return this.currentRank.CalculateMinHonorForRankQualification(maxQualifiedRanks[maxQualifiedRanks.length - 1]);
-        }
-        else {
-            // most likely rank 14
-            return this.currentRank.CalculateMinHonorForRankQualification(this.currentRank);
-        }
+    DisplayHonorFarmProgress(): number {
+        return this.calculationService.CalculateHonorFarmProgress(this.currentRank, this.honorFarmed);
     }
 
-    //#region This Week
-    /**
-     * @name CalculateCurrentRating
-     * @description Calculates the current amount of CP
-     */
-    CalculateCurrentRating(): number {
-        if (this.currentRankNum == RankData.MaxRankNum) {
-            return (this.currentRank.CpRequirement + ((RankData.MaxCp + 5000 - this.currentRank.CpRequirement) * this.rankProgress / 100));
-        }
-        else {
-            let nNext = Number(this.currentRankNum) + 1;
-            let rNext = RankData.RankMap.get(nNext);
-            if (!rNext) {
-                throw new Error(`Could not find Rank ${nNext} in RankMap`);
-            }
-            return (this.currentRank.CpRequirement + ((rNext.CpRequirement - this.currentRank.CpRequirement) * this.rankProgress / 100));
-        }
+    DisplayMinimumHonorForMaxRatingGain(): number {
+        return this.calculationService.CalculateMinimumHonorForMaxRatingGain(this.currentRank);
     }
-
-    CalculateMaxRatingGain(): number {
-        let maxQualifiedRanks = this.CalculateQualifiedRanks(RankData.MaxHonor);
-        return this.CalculateRatingGain(maxQualifiedRanks);
-    }
-    //#endregion
-
-    //#region Next Week
-    CalculateRatingGain(qualifiedRanks: Rank[]): number {
-        let cpSum = 0;
-
-        if (qualifiedRanks.length > 0) {
-
-            for (let i = 0; i < qualifiedRanks.length; i++) {
-                let rank = qualifiedRanks[i];
-                if (rank.Num == this.currentRankNum) {
-                    // we get the same amount of reward of the next rank by only qualifying for the current rank
-                    if (qualifiedRanks.length == 1) {
-                        let nextRank = RankData.RankMap.get(rank.Num + 1);
-                        if (!nextRank) {
-                            throw new Error(`Could not find Rank ${rank.Num + 1} in RankMap`);
-                        }
-
-                        cpSum += nextRank.CalculateRankQualificationReward(this.currentRankNum, this.rankProgress, rank);
-                    }
-                    continue;
-                }
-
-                let previousRank = RankData.RankMap.get(rank.Num - 1);
-                if (!previousRank) {
-                    if (rank.Num > 1) {
-                        throw new Error(`Could not find Rank ${rank.Num - 1} in RankMap`);
-                    }
-                    else {
-                        // Rank 1s Reward is 0 anyway, no need to calculate anything
-                        continue;
-                    }
-                }
-
-                cpSum += rank.CalculateRankQualificationReward(this.currentRankNum, this.rankProgress, previousRank);
-            }
-
-            cpSum += this.CalculateBonusCp(qualifiedRanks);
-        }
-        else {
-            // Decay Calculation
-            cpSum -= Math.min(RankData.MaxDecayCp, this.CalculateCurrentRating() - this.currentRank.CpRequirement);
-        }
-
-        return cpSum;
-    }
-
-    /**
-     * This calculation has been introduced when Blizzard updated their calculations to prevent gaming the system by farming Dishonorable Kills
-     * It probably serves the purpose to stay true to the original goal of "8 weeks from R0 to R14"
-     */
-    CalculateBonusCp(qualifiedRanks: Rank[]): number {
-        if (qualifiedRanks.length > 0 && this.currentRankNum >= 6 && this.currentRankNum <= 10) {
-            // qualifying for current rank grants you the first bucket for free, so the minimum amount of buckets here is 1
-            // because we have qualified at least for the current rank (qualifiedRanks.length > 0)
-            let numBuckets = Math.max(qualifiedRanks.length - 1, 1);
-            let bonusCp = 0;
-            let bonusBuckets = RankData.BonusCpMatrix[this.currentRankNum];
-            bonusCp = bonusBuckets[numBuckets - 1];
-
-            return bonusCp;
-        }
-
-        return 0;
-    }
-
-    CalculateNextRating(): number {
-        let nextRating = this.CalculateCurrentRating() + this.CalculateRatingGain(this.CalculateQualifiedRanks(this.honorFarmed));
-
-        // Prevent Derank from Decay
-        if (nextRating < this.currentRank.CpRequirement)
-            nextRating = this.currentRank.CpRequirement;
-
-        return nextRating;
-    }
-
-    CalculateNextRankNum(): number {
-        let nextRating = this.CalculateNextRating();
-
-        let rankRequirementsMet = Array.from(RankData.RankMap.values()).filter(r => nextRating >= r.CpRequirement);
-        if (rankRequirementsMet.length > 0) {
-            return rankRequirementsMet[rankRequirementsMet.length - 1].Num;
-        }
-        else {
-            throw new Error("Could not calculate next rank, as we have not met any Rank Requirements. This should never happen.");
-        }
-    }
-
-    CalculateNextRankPercentage(): number {
-        let nextRating = this.CalculateNextRating();
-
-        let rankRequirementsMet = Array.from(RankData.RankMap.values()).filter(r => nextRating >= r.CpRequirement);
-        if (rankRequirementsMet.length > 0) {
-            let nextRank = rankRequirementsMet[rankRequirementsMet.length - 1];
-            let cpAboveRequirement = nextRating - nextRank.CpRequirement;
-            let nextRankMaxCp = 0;
-            if (nextRank.Num >= RankData.MaxRankNum) {
-                nextRankMaxCp = RankData.MaxCp;
-            }
-            else {
-                let plusOneRank = RankData.RankMap.get(nextRank.Num + 1);
-                if (!plusOneRank) {
-                    throw new Error(`Could not calculate next ranks maximum CP, because we could not find Rank ${nextRank.Num + 1} in RankMap`);
-                }
-                nextRankMaxCp = plusOneRank.CpRequirement;
-            }
-
-            return cpAboveRequirement / (nextRankMaxCp - nextRank.CpRequirement) * 100;
-        }
-        else {
-            throw new Error("Could not calculate next rank percentage, as we have not met any Rank Requirements. This should never happen.")
-        }
-    }
-
-    CalculateMaxNextRankNum(): number {
-        let nextRating = this.CalculateCurrentRating() + this.CalculateMaxRatingGain();
-
-        let rankRequirementsMet = Array.from(RankData.RankMap.values()).filter(r => nextRating >= r.CpRequirement);
-        if (rankRequirementsMet.length > 0) {
-            return rankRequirementsMet[rankRequirementsMet.length - 1].Num;
-        }
-        else {
-            throw new Error("Could not calculate next maximum rank, as we have not met any Rank Requirements. This should never happen.");
-        }
-    }
-    //#endregion
     //#endregion
 
     //#region Copy to Clipboard
     fallbackCopyTextToClipboard(text: string): boolean {
-        var textArea = document.createElement("textarea");
+        const textArea = document.createElement("textarea");
         textArea.value = text;
 
         // Avoid scrolling to bottom
@@ -374,7 +205,7 @@ export class CalculatorComponent {
 
         let retVal = false;
         try {
-            var successful = document.execCommand('copy');
+            const successful = document.execCommand('copy');
             retVal = successful;
         } catch (err) {
             console.error('Fallback: Oops, unable to copy', err);
@@ -387,7 +218,7 @@ export class CalculatorComponent {
 
     copyTextToClipboard(text: string): void {
         if (!navigator.clipboard) {
-            let success = this.fallbackCopyTextToClipboard(text);
+            const success = this.fallbackCopyTextToClipboard(text);
             if (!success) {
                 throw new Error("Could not copy text");
             }
@@ -412,9 +243,9 @@ export class CalculatorComponent {
         if (e.data == null)
             return;
 
-        let elInput = <HTMLInputElement>e.target;
+        const elInput = <HTMLInputElement>e.target;
         let nextVal = "";
-        let validRegEx = allowDecimalPoint ? /^\d+(?:[,.])?(?:\d+)?$/ : /^\d+$/;
+        const validRegEx = allowDecimalPoint ? /^\d+(?:[,.])?(?:\d+)?$/ : /^\d+$/;
 
         if (elInput.selectionStart) {
             nextVal += elInput.value.substring(0, elInput.selectionStart)
@@ -432,7 +263,7 @@ export class CalculatorComponent {
     }
 
     validateNumberOnChange(e: Event, min: number, max: number): void {
-        let elInput = <HTMLInputElement>e.target;
+        const elInput = <HTMLInputElement>e.target;
 
         // check if value is a valid number or NaN
         if (isNaN(Number(elInput.value))) {
@@ -452,36 +283,7 @@ export class CalculatorComponent {
     }
     //#endregion
 
-    //#region Helpers
-    // https://gist.github.com/mimshins/04ed97a1c6301f248b23509a1be731b5
-    /**
-     * Linear interpolate on the scale given by `a` to `b`, using `t` as the point on that scale.
-     */
-    lerp = (a: number, b: number, t: number) => a + t * (b - a);
-
-    /**
-     * Inverse Linar Interpolation, get the fraction between `a` and `b` on which `v` resides.
-     */
-    inLerp = (a: number, b: number, v: number) => (v - a) / (b - a);
-
-    /**
-     * Remap values from one linear scale to another.
-     *
-     * `oMin` and `oMax` are the scale on which the original value resides,
-     * `rMin` and `rMax` are the scale to which it should be mapped.
-     */
-    remap = (
-        v: number,
-        oMin: number,
-        oMax: number,
-        rMin: number,
-        rMax: number
-    ) => this.lerp(rMin, rMax, this.inLerp(oMin, oMax, v));
-
-    clamp = (a: number, min: number, max: number) => Math.min(max, Math.max(min, a));
-
     updateUrl(): void {
         this.router.navigate([ "/calculator", this.currentRankNum, this.rankProgress, this.honorFarmed ]);
     }
-    //#endregion
 }

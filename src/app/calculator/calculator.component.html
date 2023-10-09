@@ -59,11 +59,11 @@
                         <td>Rating</td>
                         <td class="font-monospace">
                             <!-- TODO: Placeholder until Decay gets implemented -->
-                            <span class="badge bg-danger" *ngIf="CalculateNextRating() - CalculateCurrentRating() <= 0">Decaying</span>
-                            <span *ngIf="CalculateNextRating() - CalculateCurrentRating() > 0">
+                            <span class="badge bg-danger" *ngIf="DisplayRatingChange() <= 0">Decaying</span>
+                            <span *ngIf="DisplayRatingChange() > 0">
                                 {{ DisplayNextRating() }}
-                                <span [ngClass]="{'badge': true, 'bg-success': CalculateNextRating() - CalculateCurrentRating() > 0, 'bg-danger': CalculateNextRating() - CalculateCurrentRating() <= 0}">
-                                    <span *ngIf="CalculateNextRating() - CalculateCurrentRating() >= 0">+</span>
+                                <span [ngClass]="{'badge': true, 'bg-success': DisplayRatingChange() > 0, 'bg-danger': DisplayRatingChange() <= 0}">
+                                    <span *ngIf="DisplayRatingChange() >= 0">+</span>
                                     {{ DisplayRatingChange() }}
                                 </span>
                             </span>
@@ -77,8 +77,8 @@
                         <td>Rank</td>
                         <td class="font-monospace">
                             <span>
-                                <img [src]="DisplayRankIconUrl(CalculateNextRankNum())" class="img-fluid">
-                                {{ CalculateNextRankNum() }} ({{ DisplayNextRankPercentage() }}%)
+                                <img [src]="DisplayRankIconUrl(DisplayNextRankNum())" class="img-fluid">
+                                {{ DisplayNextRankNum() }} ({{ DisplayNextRankPercentage() }}%)
                             </span>
                         </td>
                     </tr>
@@ -86,8 +86,8 @@
                         <td>Max Possible Rank</td>
                         <td class="font-monospace">
                             <span>
-                                <img [src]="DisplayRankIconUrl(CalculateMaxNextRankNum())" class="img-fluid">
-                                {{ CalculateMaxNextRankNum() }}
+                                <img [src]="DisplayRankIconUrl(DisplayMaxNextRankNum())" class="img-fluid">
+                                {{ DisplayMaxNextRankNum() }}
                             </span>
                         </td>
                     </tr>
@@ -98,9 +98,9 @@
 </div>
 <h5 class="mt-5">min. Honor for max. Rating</h5>
 <div class="progress" role="progressbar" style="height: 60px;">
-    <div class="progress-bar bg-success overflow-visible" [ngStyle]="{ width: CalculateHonorFarmProgress() + '%' }">
-        <span class="text-center fs-5 ps-2 pe-2">{{ honorFarmed }} / {{ CalculateMinimumHonorForMaxRatingGain() }} Honor</span>
-        <span class="ps-2 pe-2">{{ CalculateHonorFarmProgress().toFixed(2) }}%</span>
+    <div class="progress-bar bg-success overflow-visible" [ngStyle]="{ width: DisplayHonorFarmProgress() + '%' }">
+        <span class="text-center fs-5 ps-2 pe-2">{{ honorFarmed }} / {{ DisplayMinimumHonorForMaxRatingGain() }} Honor</span>
+        <span class="ps-2 pe-2">{{ DisplayHonorFarmProgress().toFixed(2) }}%</span>
     </div>
 </div>
 <div class="d-flex" style="height: 20px"> 
