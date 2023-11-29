@@ -29,8 +29,6 @@ That's why I have decided to rephrase this to two different phrases:
 | 13   | 55000                    | 0.4                    |
 | 14   | 60000                    | 0.34                   |
 
-Honor requirements have been provided by Beastinblack @ Firemaw-EU. Thank you!
-
 ## Honor Conversion Brackets
 What I call Conversion Brackets are the Ranges of Ranks that have different QP/Honor Conversion Rates, as stated in Blizzards Bluepost.
 These are equal for all Ranks within the Bracket.
@@ -42,13 +40,10 @@ These are equal for all Ranks within the Bracket.
 | 2         | 11          | 14          | (500000-175000)/(60000-40000) = 16.25 |
 
 ## Decay
-What we know about Decay:
-1. You will decay if you could not qualify for your current Rank
-2. If you qualify for a Rank **at or above** your current one, there is **no decay**
-3. You cannot downrank by Decay
-4. Decay will take away up to 2500 Rating. Formula: ```NextWeekCp = CurrentCp - min(2500, CurrentCp - CurrentRankCpRequirement)```
+Decay has been removed completely. The only way you can lose Rank or Progress is by killing Civilian NPCs.
 
 ## References
+- [1.15 Decay Removal Announcement](https://us.forums.blizzard.com/en/wow/t/classic-era-pvp-update-december-5/1724481)
 - [Dishonorable Kills Change](https://us.forums.blizzard.com/en/wow/t/so-how-does-this-dishonorable-kill-system-work/1664598/38)
 - [WoW Classic Era 1.14.4 PvP Ranking Update Examples](https://eu.forums.blizzard.com/en/wow/t/wow-classic-era-1144-pvp-ranking-update-examples/463646)
 - [Classic Era 1.14.4 PvP Update](https://eu.forums.blizzard.com/en/wow/t/classic-era-1144-pvp-update/457615)
