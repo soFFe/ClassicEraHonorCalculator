@@ -99,10 +99,10 @@ export class CalculationService {
 
             cpSum += this.CalculateBonusCp(currentRank, qualifiedRanks);
         }
-        else {
-            // Decay Calculation
-            cpSum -= Math.min(Rank.MaxDecayCp, this.CalculateCurrentRating(currentRank, rankProgress) - currentRank.CpRequirement);
-        }
+        // else {
+        //     // Decay Calculation
+        //     cpSum -= Math.min(Rank.MaxDecayCp, this.CalculateCurrentRating(currentRank, rankProgress) - currentRank.CpRequirement);
+        // }
 
         return cpSum;
     }

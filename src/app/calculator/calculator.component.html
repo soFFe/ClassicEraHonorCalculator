@@ -58,12 +58,10 @@
                     <tr>
                         <td>Rating</td>
                         <td class="font-monospace">
-                            <!-- TODO: Placeholder until Decay gets implemented -->
-                            <span class="badge bg-danger" *ngIf="DisplayRatingChange() <= 0">Decaying</span>
-                            <span *ngIf="DisplayRatingChange() > 0">
+                            <span>
                                 {{ DisplayNextRating() }}
-                                <span [ngClass]="{'badge': true, 'bg-success': DisplayRatingChange() > 0, 'bg-danger': DisplayRatingChange() <= 0}">
-                                    <span *ngIf="DisplayRatingChange() >= 0">+</span>
+                                <span class="badge bg-success">
+                                    <span>+</span>
                                     {{ DisplayRatingChange() }}
                                 </span>
                             </span>
@@ -104,8 +102,8 @@
     </div>
 </div>
 <div class="d-flex" style="height: 20px"> 
-    <span *ngFor="let ms of qualificationMilestones; let i = index" class="progressbar-milestone d-flex justify-content-end" [ngClass]="{ 'border-danger': i == 0 }" [style]="{ width: ms.HonorRequirementPercentage + '%' }">
-        <button type="button" class="progressbar-milestone-button d-flex align-items-center" [ngClass]="{ 'text-danger': i == 0 }" (click)="honorFarmed = ms.HonorRequirement" [title]="'set Honor this week to ' + ms.HonorRequirement">
+    <span *ngFor="let ms of qualificationMilestones; let i = index" class="progressbar-milestone d-flex justify-content-end" [ngClass]="{'progressbar-milestone-hidden': i == 1}" [style]="{ width: ms.HonorRequirementPercentage + '%' }">
+        <button *ngIf="i != 1" type="button" class="progressbar-milestone-button d-flex align-items-center" (click)="honorFarmed = ms.HonorRequirement" [title]="'set Honor this week to ' + ms.HonorRequirement">
             <ng-icon name="bootstrapChevronDoubleRight" class="d-flex fade me-1"></ng-icon>
             <span class="me-1">{{ ms.HonorRequirement }}</span>
         </button>
