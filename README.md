@@ -1,7 +1,7 @@
 # Classic Era Honor Calculator
 ![Build](https://github.com/soFFe/ClassicEraHonorCalculator/actions/workflows/angular-gh-pages.yml/badge.svg)
 
-A simple Angular Web-App intended for World of Warcraft Classic Era PvP players.
+A simple Angular Web-App intended for World of Warcraft Classic Era / Season Of Discovery PvP players.
 The 1.14.4 PvP System Update indirectly introduced limits to the amount of Rank Progress you can gain in one week.
 This Calculator is meant for people who want to min/max these limits.
 
@@ -49,8 +49,7 @@ Decay has been removed completely. The only way you can lose Rank or Progress is
 - [Classic Era 1.14.4 PvP Update](https://eu.forums.blizzard.com/en/wow/t/classic-era-1144-pvp-update/457615)
 - [Beastinblack-Firemaw's Calculation Google Doc](https://docs.google.com/spreadsheets/d/1vX1eXeDflKf7mC1PHm_5OhSKv6LjjjZEe3DzWHqyCKM/copy)
 
-## Project Dependencies
-- Angular 16.2
+## Build Dependencies
+- Angular 17
 - node
 - npm
-- Bootstrap 5.3.1

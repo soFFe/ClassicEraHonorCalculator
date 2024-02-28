@@ -2,11 +2,7 @@
 {
     border-right: 1px solid #fff;
     text-align: right;
-}
-
-.progressbar-milestone-hidden
-{
-    border-right: 0 !important;
+    box-sizing: content-box;
 }
 
 .progressbar-milestone-button {
@@ -21,4 +17,21 @@
 .progressbar-milestone:hover .progressbar-milestone-button>ng-icon
 {
     opacity: 1;
+}
+
+.custom-danger-popover {
+    border-color: var(--bs-danger) !important;
+}
+.custom-danger-popover .popover-header
+{
+    background-color: var(--bs-danger) !important;
+    color: var(--bs-white) !important;
+}
+.custom-danger-popover .popover-header::before
+{
+    border-bottom-color: var(--bs-danger) !important;
+}
+.custom-danger-popover .popover-arrow:after {
+    border-top-color: var(--bs-danger) !important;;
+    border-bottom-color: var(--bs-danger) !important;
 }

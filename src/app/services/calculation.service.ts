@@ -31,11 +31,13 @@ export class CalculationService {
     CalculateMinimumHonorForMaxRatingGain(currentRank: Rank): number {
         const maxQualifiedRanks = Array.from(Rank.RankMap.values())
             .filter(r => r.Num > currentRank.Num && r.Num <= Math.min(currentRank.Num + Rank.MaxRankQualifications, Rank.MaxRankNum));
-        if (maxQualifiedRanks.length > 0) {
+        
+        if (maxQualifiedRanks.length > 1) {
             return currentRank.CalculateMinHonorForRankQualification(maxQualifiedRanks[maxQualifiedRanks.length - 1]);
         }
-        else {
-            // most likely rank 14
+        else { // R14 or R13
+            // due to how qualifying for the same rank will give you the same amount of progress as qualifying for the next higher rank,
+            // the minimum for R13 here is 418750, not 500k
             return currentRank.CalculateMinHonorForRankQualification(currentRank);
         }
     }
@@ -180,6 +182,32 @@ export class CalculationService {
         const rankRequirementsMet = Array.from(Rank.RankMap.values()).filter(r => nextRating >= r.CpRequirement);
         if (rankRequirementsMet.length > 0) {
             return rankRequirementsMet[rankRequirementsMet.length - 1].Num;
+        }
+        else {
+            throw new Error("Could not calculate next maximum rank, as we have not met any Rank Requirements. This should never happen.");
+        }
+    }
+
+    CalculateMaxNextRankPercentage(currentRank: Rank, rankProgress: number): number {
+        const nextRating = this.CalculateCurrentRating(currentRank, rankProgress) + this.CalculateMaxRatingGain(currentRank, rankProgress);
+
+        const rankRequirementsMet = Array.from(Rank.RankMap.values()).filter(r => nextRating >= r.CpRequirement);
+        if (rankRequirementsMet.length > 0) {
+            const nextRank = rankRequirementsMet[rankRequirementsMet.length - 1];
+            const cpAboveRequirement = nextRating - nextRank.CpRequirement;
+            let nextRankMaxCp = 0;
+            if (nextRank.Num >= Rank.MaxRankNum) {
+                nextRankMaxCp = Rank.MaxCp + 5000;
+            }
+            else {
+                const plusOneRank = Rank.RankMap.get(nextRank.Num + 1);
+                if (!plusOneRank) {
+                    throw new Error(`Could not calculate next ranks maximum CP, because we could not find Rank ${nextRank.Num + 1} in RankMap`);
+                }
+                nextRankMaxCp = plusOneRank.CpRequirement;
+            }
+
+            return cpAboveRequirement / (nextRankMaxCp - nextRank.CpRequirement) * 100;
         }
         else {
             throw new Error("Could not calculate next maximum rank, as we have not met any Rank Requirements. This should never happen.");
