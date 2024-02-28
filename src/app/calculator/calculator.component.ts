@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, ViewEncapsulation } from '@angular/core';
 import { Rank } from '../models/rank';
 import { QualificationMilestone } from '../models/qualificationMilestone';
 import { Router } from '@angular/router';
@@ -8,6 +8,7 @@ import { CalculationService } from '../services/calculation.service';
     selector: 'calculator-root',
     templateUrl: './calculator.component.html',
     styleUrls: ['./calculator.component.scss'],
+    encapsulation: ViewEncapsulation.None,
     providers: [CalculationService]
 })
 export class CalculatorComponent {
@@ -16,7 +17,7 @@ export class CalculatorComponent {
     public get currentRankNum(): number {
         return this._currentRankNum;
     }
-    
+
     @Input()
     public set currentRankNum(value: number) {
         if (isNaN(value)) {
@@ -49,9 +50,9 @@ export class CalculatorComponent {
 
     @Input()
     public set rankProgress(value: string) {
-        if(value != undefined)
+        if (value != undefined)
             value = value.replaceAll(/,/g, '.');
-        
+
         if (isNaN(Number(value)))
             this._rankProgress = 0;
         else if (Number(value) < 0)
@@ -80,10 +81,10 @@ export class CalculatorComponent {
             this._honorFarmed = Rank.MaxHonor
         else
             this._honorFarmed = Number(value);
-
-        this.updateUrl();
     }
     //#endregion
+
+    private _bDraggingHonorBar: boolean = false;
 
     qualificationMilestones: QualificationMilestone[];
     ranks: Array<number> = Array.from(Rank.RankMap.keys()).filter(n => n <= Rank.MaxRankNum);
@@ -142,7 +143,7 @@ export class CalculatorComponent {
 
     DisplayQualificationMilestones(): QualificationMilestone[] {
         const maxQualifiedRanks = Array.from(Rank.RankMap.values())
-            .filter(r => r.Num >= this.currentRankNum && r.Num <= Math.min(this.currentRankNum + Rank.MaxRankQualifications, Rank.MaxRankNum), this);
+            .filter(r => r.Num >= this.currentRankNum && r.Num != this.currentRankNum + 1 && r.Num <= Math.min(this.currentRankNum + Rank.MaxRankQualifications, Rank.MaxRankNum), this);
 
         const milestones: QualificationMilestone[] = [];
         for (let i = 0; i < maxQualifiedRanks.length; i++) {
@@ -180,13 +181,19 @@ export class CalculatorComponent {
         return this.calculationService.CalculateMaxNextRankNum(this.currentRank, this.rankProgress);
     }
 
-    DisplayHonorFarmProgress(): number {
-        return this.calculationService.CalculateHonorFarmProgress(this.currentRank, this.honorFarmed);
+    DisplayMaxNextRankPercentage(): string {
+        return this.calculationService.CalculateMaxNextRankPercentage(this.currentRank, this.rankProgress).toFixed(2);
+    }
+
+    DisplayMilestoneProgress(ms: QualificationMilestone, index: number): number {
+        const previousRankRequirement = (index > 0 ? this.qualificationMilestones[index - 1].HonorRequirement : 0);
+        return Math.max(Math.min((this.honorFarmed - previousRankRequirement) / (ms.HonorRequirement - previousRankRequirement), 1), 0) * ms.HonorRequirementPercentage;
     }
 
     DisplayMinimumHonorForMaxRatingGain(): number {
         return this.calculationService.CalculateMinimumHonorForMaxRatingGain(this.currentRank);
     }
+
     //#endregion
 
     //#region Copy to Clipboard
@@ -284,6 +291,6 @@ export class CalculatorComponent {
     //#endregion
 
     updateUrl(): void {
-        this.router.navigate([ "/calculator", this.currentRankNum, this.rankProgress, this.honorFarmed ]);
+        this.router.navigate(["/calculator", this.currentRankNum, this.rankProgress, this.honorFarmed]);
     }
 }

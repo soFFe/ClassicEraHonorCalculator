@@ -69,10 +69,10 @@ export class Rank {
                 break;
             }
         }
-        
+
         return Rank.ConversionBrackets[matchedBracket];
     }
-    
+
     //#region Calculation Methods
     public CalculateRankQualificationReward(currentRankNum: number, currentRankProgressPercentage: number, previousRank: Rank): number {
         let cpReward = (this.CpRequirement - previousRank.CpRequirement) * this.ChangeFactor;
@@ -105,25 +105,24 @@ export class Rank {
                 // Can not qualify for a rank this high
                 throw new Error(`Could not calculate Honor Cap for Rank ${this.Num} as the provided highest qualified Rank ${highestQualifiedRank.Num} is above the limit of ${this.Num + Rank.MaxRankQualifications}`)
             }
-
-            if (highestQualifiedRank.Num <= this.Num && this.Num != Rank.MaxRankNum) {
-                // Qualification has to be above the current rank to not decay, except for R14.
+            else if (highestQualifiedRank.Num < this.Num) {
+                // Qualification has to match the current rank in order to gain any progress
                 return 0;
             }
 
             // When I say "Bracket" here, I refer to the three different Conversion Rates for R1-R6, R7-R10 and R11-R14
             // For each Bracket this calculation is done only in relation to its own bracket! (thanks Lewkah & Beastinblack)
-            const qualifiedConversionBracket = highestQualifiedRank.GetConversionBracket();
-            if (qualifiedConversionBracket.Id == 0) {
-                return highestQualifiedRank.CpRequirement * qualifiedConversionBracket.CpToHonorRate;
+            const targetConversionBracket = highestQualifiedRank.GetConversionBracket();
+            if (targetConversionBracket.Id == 0) {
+                return highestQualifiedRank.CpRequirement * targetConversionBracket.CpToHonorRate;
             }
-            else if (qualifiedConversionBracket.Id == 1) {
+            else if (targetConversionBracket.Id == 1) {
                 // magic
-                return 45000 + (highestQualifiedRank.CpRequirement - 20000) * qualifiedConversionBracket.CpToHonorRate;
+                return 45000 + (highestQualifiedRank.CpRequirement - 20000) * targetConversionBracket.CpToHonorRate;
             }
             else {
                 // more wizardry for Conversion Bracket 3 (Id:2)
-                return 175000 + (highestQualifiedRank.CpRequirement - 40000) * qualifiedConversionBracket.CpToHonorRate;
+                return 175000 + (highestQualifiedRank.CpRequirement - 40000) * targetConversionBracket.CpToHonorRate;
             }
         }
 

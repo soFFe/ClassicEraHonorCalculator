@@ -67,10 +67,10 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "browserTarget": "wow-classic-era-honorcalculator:build:production"
+              "buildTarget": "wow-classic-era-honorcalculator:build:production"
             },
             "development": {
-              "browserTarget": "wow-classic-era-honorcalculator:build:development"
+              "buildTarget": "wow-classic-era-honorcalculator:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -78,7 +78,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "wow-classic-era-honorcalculator:build"
+            "buildTarget": "wow-classic-era-honorcalculator:build"
           }
         },
         "test": {
