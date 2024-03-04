@@ -28,7 +28,7 @@
     "@ng-icons/simple-icons": "^27.1.0",
     "@popperjs/core": "^2.11.8",
     "bootstrap": "^5.3.1",
-    "chart.js": "^4.4.0",
+    "chart.js": "^4.4.2",
     "chartjs-adapter-date-fns": "^3.0.0",
     "chartjs-plugin-annotation": "^3.0.1",
     "date-fns": "^2.30.0",
