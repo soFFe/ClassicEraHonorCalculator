@@ -3,7 +3,7 @@ import { ComponentFixture, ComponentFixtureAutoDetect, TestBed } from '@angular/
 import { ProgressionPlanningComponent } from './progression-planning.component';
 import { FormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
-import { NgChartsModule } from 'ng2-charts';
+import { BaseChartDirective, provideCharts, withDefaultRegisterables } from 'ng2-charts';
 import { CountdownModule } from 'ngx-countdown';
 import { AppRoutingModule } from '../app-routing.module';
 import { bootstrapDash, bootstrapPlus } from '@ng-icons/bootstrap-icons';
@@ -16,13 +16,13 @@ describe('ProgressionPlanningComponent', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       declarations: [ProgressionPlanningComponent],
-      providers: [{ provider: ComponentFixtureAutoDetect, useValue: true }],
+      providers: [provideCharts(withDefaultRegisterables()), { provider: ComponentFixtureAutoDetect, useValue: true }],
       imports: [
         BrowserModule,
         FormsModule,
         CountdownModule,
         AppRoutingModule,
-        NgChartsModule,
+        BaseChartDirective,
         NgIconsModule.withIcons({ bootstrapDash, bootstrapPlus})
       ],
     });
