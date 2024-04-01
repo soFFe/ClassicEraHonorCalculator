@@ -11,10 +11,11 @@ import { simpleCurseforge } from '@ng-icons/simple-icons';
 import { AppRoutingModule } from './app-routing.module';
 import { ProgressionPlanningComponent } from './progression-planning/progression-planning.component';
 import { CountdownModule } from 'ngx-countdown';
-import { NgChartsModule } from 'ng2-charts';
+import { BaseChartDirective, provideCharts, withDefaultRegisterables } from 'ng2-charts';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
 @NgModule({
+  providers: [provideCharts(withDefaultRegisterables())],
   declarations: [
     AppComponent,
     CalculatorComponent,
@@ -28,7 +29,7 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
     NgIconsModule.withIcons({ bootstrapClipboard, bootstrapDiscord, bootstrapChevronDoubleRight, bootstrapGithub, bootstrapGraphUpArrow, simpleCurseforge, bootstrapPlus, bootstrapDash, bootstrapArrowDownCircleFill, bootstrapQuestionCircle }),
     CountdownModule,
     AppRoutingModule,
-    NgChartsModule,
+    BaseChartDirective,
     NgbModule
   ],
   bootstrap: [AppComponent]

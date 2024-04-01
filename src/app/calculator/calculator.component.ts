@@ -81,10 +81,10 @@ export class CalculatorComponent {
             this._honorFarmed = Rank.MaxHonor
         else
             this._honorFarmed = Number(value);
+
+        this.updateUrl();
     }
     //#endregion
-
-    private _bDraggingHonorBar: boolean = false;
 
     qualificationMilestones: QualificationMilestone[];
     ranks: Array<number> = Array.from(Rank.RankMap.keys()).filter(n => n <= Rank.MaxRankNum);
