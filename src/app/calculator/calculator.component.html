@@ -42,9 +42,9 @@
         <div class="mt-3">
             <label for="honorFarmed">Honor this week</label>
             <input type="text" [(ngModel)]="honorFarmed" (beforeinput)="validateNumberBeforeInput($event, false)"
-                (change)="validateNumberOnChange($event, 0, 500000);updateUrl()" class="form-control font-monospace"
+                (change)="validateNumberOnChange($event, 0, 500000)" class="form-control font-monospace"
                 name="honorFarmed" autocomplete="off" id="honorFarmed" [placeholder]="honorFarmed">
-            <input type="range" name="honorFarmedRange" class="form-range" min="0" [max]="DisplayMinimumHonorForMaxRatingGain()" step="1" id="honorRange" [(ngModel)]="honorFarmed" (change)="updateUrl()">
+            <input type="range" name="honorFarmedRange" class="form-range" min="0" [max]="DisplayMinimumHonorForMaxRatingGain()" step="1" id="honorRange" [(ngModel)]="honorFarmed">
             <div>
                 <div class="progress-stacked" style="height: 60px">
                     <ng-container *ngFor="let ms of qualificationMilestones; let i = index">
