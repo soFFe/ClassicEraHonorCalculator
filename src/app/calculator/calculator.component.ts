@@ -12,6 +12,31 @@ import { CalculationService } from '../services/calculation.service';
     providers: [CalculationService]
 })
 export class CalculatorComponent {
+    //#region characterLevel
+    private _characterLevel: number = 60;
+    public get characterLevel(): number {
+        return this._characterLevel;
+    }
+
+    @Input()
+    public set characterLevel(value: number) {
+        if(isNaN(value))
+        {
+            this._characterLevel = 60;
+        }
+        else if (value < 1) {
+            this._characterLevel = 1;
+        }
+        else if(value > 60) {
+            this._characterLevel = 60;
+        }
+        else {
+            this._characterLevel = Number(value);
+        }
+
+        this.updateUrl();
+    }
+    //#endregion
     //#region currentRankNum
     private _currentRankNum: number = 1;
     public get currentRankNum(): number {
@@ -106,7 +131,7 @@ export class CalculatorComponent {
     }
 
     DisplayNextRankIconUrl(): string {
-        return this.DisplayRankIconUrl(this.calculationService.CalculateNextRankNum(this.currentRank, this.rankProgress, this.honorFarmed));
+        return this.DisplayRankIconUrl(this.calculationService.CalculateNextRankNum(this.currentRank, this.rankProgress, this.honorFarmed, this.characterLevel));
     }
 
     DisplayRankIconUrl(rankNum: number): string {
@@ -138,7 +163,7 @@ export class CalculatorComponent {
     }
 
     DisplayNextRankPercentage(): string {
-        return this.calculationService.CalculateNextRankPercentage(this.currentRank, this.rankProgress, this.honorFarmed).toFixed(2);
+        return this.calculationService.CalculateNextRankPercentage(this.currentRank, this.rankProgress, this.honorFarmed, this.characterLevel).toFixed(2);
     }
 
     DisplayQualificationMilestones(): QualificationMilestone[] {
@@ -166,15 +191,15 @@ export class CalculatorComponent {
     }
 
     DisplayNextRating(): number {
-        return Math.round(this.calculationService.CalculateNextRating(this.currentRank, this.rankProgress, this.honorFarmed));
+        return Math.round(this.calculationService.CalculateNextRating(this.currentRank, this.rankProgress, this.honorFarmed, this.characterLevel));
     }
 
     DisplayRatingChange(): number {
-        return Math.round(this.calculationService.CalculateNextRating(this.currentRank, this.rankProgress, this.honorFarmed) - this.calculationService.CalculateCurrentRating(this.currentRank, this.rankProgress));
+        return Math.round(this.calculationService.CalculateNextRating(this.currentRank, this.rankProgress, this.honorFarmed, this.characterLevel) - this.calculationService.CalculateCurrentRating(this.currentRank, this.rankProgress));
     }
 
     DisplayNextRankNum(): number {
-        return this.calculationService.CalculateNextRankNum(this.currentRank, this.rankProgress, this.honorFarmed);
+        return this.calculationService.CalculateNextRankNum(this.currentRank, this.rankProgress, this.honorFarmed, this.characterLevel);
     }
 
     DisplayMaxNextRankNum(): number {
@@ -291,6 +316,6 @@ export class CalculatorComponent {
     //#endregion
 
     updateUrl(): void {
-        this.router.navigate(["/calculator", this.currentRankNum, this.rankProgress, this.honorFarmed]);
+        this.router.navigate(["/calculator", this.currentRankNum, this.rankProgress, this.honorFarmed, this.characterLevel]);
     }
 }

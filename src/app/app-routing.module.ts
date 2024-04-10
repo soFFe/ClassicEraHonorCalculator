@@ -13,6 +13,10 @@ const appRoutes: Routes = [
         component: CalculatorComponent
     },
     {
+        path: 'calculator/:currentRankNum/:rankProgress/:honorFarmed/:characterLevel',
+        component: CalculatorComponent
+    },
+    {
         path: 'progression-planning',
         component: ProgressionPlanningComponent
     },
