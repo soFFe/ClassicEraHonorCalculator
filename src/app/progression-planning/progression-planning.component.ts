@@ -232,14 +232,14 @@ export class ProgressionPlanningComponent {
         let lastProgress = this.rankProgress;
 
         for (let i = 0; i < this.numWeeks; i++) {
-            const nextRankNum = this.calculationService.CalculateNextRankNum(lastRank, lastProgress, Rank.MaxHonor);
+            const nextRankNum = this.calculationService.CalculateNextRankNum(lastRank, lastProgress, Rank.MaxHonor, 60);
             const nextRank = Rank.RankMap.get(nextRankNum);
             if (!nextRank) {
                 throw new Error(`Could not find Rank ${nextRankNum} in RankMap`);
             }
-            const nextProgress = this.calculationService.CalculateNextRankPercentage(lastRank, lastProgress, Rank.MaxHonor);
+            const nextProgress = this.calculationService.CalculateNextRankPercentage(lastRank, lastProgress, Rank.MaxHonor, 60);
 
-            data.push(this.calculationService.CalculateNextRating(lastRank, lastProgress, Rank.MaxHonor));
+            data.push(this.calculationService.CalculateNextRating(lastRank, lastProgress, Rank.MaxHonor, 60));
 
             lastRank = nextRank;
             lastProgress = nextProgress;
@@ -263,14 +263,14 @@ export class ProgressionPlanningComponent {
         let lastProgress = this.rankProgress;
 
         for (let i = 0; i < this.numWeeks; i++) {
-            const nextRankNum = this.calculationService.CalculateNextRankNum(lastRank, lastProgress, this.honorGoal);
+            const nextRankNum = this.calculationService.CalculateNextRankNum(lastRank, lastProgress, this.honorGoal, 60);
             const nextRank = Rank.RankMap.get(nextRankNum);
             if (!nextRank) {
                 throw new Error(`Could not find Rank ${nextRankNum} in RankMap`);
             }
-            const nextProgress = this.calculationService.CalculateNextRankPercentage(lastRank, lastProgress, this.honorGoal);
+            const nextProgress = this.calculationService.CalculateNextRankPercentage(lastRank, lastProgress, this.honorGoal, 60);
 
-            data.push(this.calculationService.CalculateNextRating(lastRank, lastProgress, this.honorGoal));
+            data.push(this.calculationService.CalculateNextRating(lastRank, lastProgress, this.honorGoal, 60));
 
             lastRank = nextRank;
             lastProgress = nextProgress;
@@ -294,14 +294,14 @@ export class ProgressionPlanningComponent {
         let lastProgress = this.rankProgress;
 
         for (let i = 0; i < this.numWeeks; i++) {
-            const nextRankNum = this.calculationService.CalculateNextRankNum(lastRank, lastProgress, lastRank.HonorRequirement);
+            const nextRankNum = this.calculationService.CalculateNextRankNum(lastRank, lastProgress, lastRank.HonorRequirement, 60);
             const nextRank = Rank.RankMap.get(nextRankNum);
             if (!nextRank) {
                 throw new Error(`Could not find Rank ${nextRankNum} in RankMap`);
             }
-            const nextProgress = this.calculationService.CalculateNextRankPercentage(lastRank, lastProgress, lastRank.HonorRequirement);
+            const nextProgress = this.calculationService.CalculateNextRankPercentage(lastRank, lastProgress, lastRank.HonorRequirement, 60);
 
-            data.push(this.calculationService.CalculateNextRating(lastRank, lastProgress, lastRank.HonorRequirement));
+            data.push(this.calculationService.CalculateNextRating(lastRank, lastProgress, lastRank.HonorRequirement, 60));
 
             lastRank = nextRank;
             lastProgress = nextProgress;

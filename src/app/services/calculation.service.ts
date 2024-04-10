@@ -128,8 +128,14 @@ export class CalculationService {
         return 0;
     }
 
-    CalculateNextRating(currentRank: Rank, rankProgress: number, honorFarmed: number): number {
+    CalculateNextRating(currentRank: Rank, rankProgress: number, honorFarmed: number, characterLevel: number): number {
         let nextRating = this.CalculateCurrentRating(currentRank, rankProgress) + this.CalculateRatingGain(currentRank, rankProgress, this.CalculateQualifiedRanks(currentRank, honorFarmed));
+
+        // Level Cap
+        if(nextRating > Rank.LevelCpCaps[characterLevel])
+        {
+            nextRating = Rank.LevelCpCaps[characterLevel];
+        }
 
         // Prevent Derank from Decay
         if (nextRating < currentRank.CpRequirement)
@@ -138,8 +144,8 @@ export class CalculationService {
         return nextRating;
     }
 
-    CalculateNextRankNum(currentRank: Rank, rankProgress: number, honorFarmed: number): number {
-        const nextRating = this.CalculateNextRating(currentRank, rankProgress, honorFarmed);
+    CalculateNextRankNum(currentRank: Rank, rankProgress: number, honorFarmed: number, characterLevel: number): number {
+        const nextRating = this.CalculateNextRating(currentRank, rankProgress, honorFarmed, characterLevel);
 
         const rankRequirementsMet = Array.from(Rank.RankMap.values()).filter(r => nextRating >= r.CpRequirement);
         if (rankRequirementsMet.length > 0) {
@@ -150,8 +156,8 @@ export class CalculationService {
         }
     }
 
-    CalculateNextRankPercentage(currentRank: Rank, rankProgress: number, honorFarmed: number): number {
-        const nextRating = this.CalculateNextRating(currentRank, rankProgress, honorFarmed);
+    CalculateNextRankPercentage(currentRank: Rank, rankProgress: number, honorFarmed: number, characterLevel: number): number {
+        const nextRating = this.CalculateNextRating(currentRank, rankProgress, honorFarmed, characterLevel);
 
         const rankRequirementsMet = Array.from(Rank.RankMap.values()).filter(r => nextRating >= r.CpRequirement);
         if (rankRequirementsMet.length > 0) {

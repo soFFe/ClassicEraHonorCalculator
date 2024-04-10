@@ -35,3 +35,21 @@
     border-top-color: var(--bs-danger) !important;;
     border-bottom-color: var(--bs-danger) !important;
 }
+
+.experimental-popover {
+    border-color: var(--bs-warning) !important;
+    border-radius: var(--bs-border-radius-lg) !important;
+}
+.experimental-popover .popover-header
+{
+    background-color: var(--bs-warning) !important;
+    color: var(--bs-black) !important;
+}
+.experimental-popover .popover-header::before
+{
+    border-bottom-color: var(--bs-warning) !important;
+}
+.experimental-popover .popover-arrow:after {
+    border-top-color: var(--bs-warning) !important;;
+    border-bottom-color: var(--bs-warning) !important;
+}

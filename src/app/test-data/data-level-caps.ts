@@ -1,0 +1,1 @@
+export const mockLevelCapData = [{"Level":29,"Rank":3,"Percentage":0,"Honor":62756,"CpGain":1000},{"Level":28,"Rank":3,"Percentage":0,"Honor":15653,"CpGain":1000},{"Level":48,"Rank":5,"Percentage":0,"Honor":110375,"CpGain":11000}];
