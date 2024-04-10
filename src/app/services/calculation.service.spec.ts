@@ -4,6 +4,7 @@ import { CalculationService } from './calculation.service';
 import { mockWeek4Data } from '../test-data/data-week4';
 import { mockWeek5Data } from '../test-data/data-week5';
 import { mockR9R11Data } from '../test-data/data-r9-r11';
+import { mockLevelCapData } from '../test-data/data-level-caps';
 import { Rank } from '../models/rank';
 
 describe('CalculationServiceService', () => {
@@ -28,9 +29,10 @@ describe('CalculationServiceService', () => {
         }
         const rankProgress = 0;
         const honorFarmed = 418750;
+        const characterLevel = 60;
 
-        expect(service.CalculateNextRankNum(currentRank, rankProgress, honorFarmed)).toBe(13);
-        expect(service.CalculateNextRankPercentage(currentRank, rankProgress, honorFarmed)).toBeCloseTo(34);
+        expect(service.CalculateNextRankNum(currentRank, rankProgress, honorFarmed, characterLevel)).toBe(13);
+        expect(service.CalculateNextRankPercentage(currentRank, rankProgress, honorFarmed, characterLevel)).toBeCloseTo(34);
     });
 
     mockWeek4Data.forEach((e, i) => {
@@ -99,6 +101,32 @@ describe('CalculationServiceService', () => {
             const ratingGain = service.CalculateRatingGain(currentRank, rankProgress, qualifiedRanks);
 
             expect(ratingGain >= min && ratingGain <= max).withContext(`Is [Predicted CP Gained] ${ratingGain} within the Range of [Actual Cp Gain ± 50] ${min} - ${max}?`).toBeTruthy();
+        });
+    });
+
+    mockLevelCapData.forEach((e, i) => {
+        it('Level Caps Dataset #' + i, () => {
+            const currentRankNum = e['Rank'];
+            const currentRank = Rank.RankMap.get(currentRankNum);
+            if (!currentRank) {
+                fail("CurrentRank could not be resolved for Rank " + currentRankNum);
+                return;
+            }
+
+            const rankProgress = e['Percentage'];
+            const honorFarmed = e['Honor'];
+            const characterLevel = e['Level'];
+
+            // allow -50 to +50
+            const min = e['CpGain'] - 50;
+            const max = e['CpGain'] + 50;
+
+            const thisWeekCp = service.CalculateCurrentRating(currentRank, rankProgress);
+            const nextWeekCp = service.CalculateNextRating(currentRank, rankProgress, honorFarmed, characterLevel);
+
+            const deltaCp = nextWeekCp - thisWeekCp;
+
+            expect(deltaCp >= min && deltaCp <= max).withContext(`Is [Predicted CP Gained] ${deltaCp} within the Range of [Actual Cp Gain ± 50] ${min} - ${max}?`).toBeTruthy();
         });
     });
 });

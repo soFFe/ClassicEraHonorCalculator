@@ -4,7 +4,7 @@ import { HeaderComponent } from './header/header.component';
 import { FooterComponent } from './footer/footer.component';
 import { CalculatorComponent } from './calculator/calculator.component';
 import { NgIconsModule } from '@ng-icons/core';
-import { bootstrapClipboard, bootstrapDiscord, bootstrapChevronDoubleRight, bootstrapGithub, bootstrapGraphUpArrow, bootstrapArrowDownCircleFill, bootstrapDash, bootstrapPlus, bootstrapQuestionCircle } from '@ng-icons/bootstrap-icons';
+import { bootstrapClipboard, bootstrapDiscord, bootstrapChevronDoubleRight, bootstrapGithub, bootstrapGraphUpArrow, bootstrapArrowDownCircleFill, bootstrapDash, bootstrapPlus, bootstrapQuestionCircle, bootstrapExclamationTriangleFill } from '@ng-icons/bootstrap-icons';
 import { simpleCurseforge } from '@ng-icons/simple-icons';
 import { FormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
@@ -26,7 +26,7 @@ describe('AppComponent', () => {
     imports: [
       BrowserModule,
       FormsModule,
-      NgIconsModule.withIcons({ bootstrapClipboard, bootstrapDiscord, bootstrapChevronDoubleRight, bootstrapGithub, bootstrapGraphUpArrow, simpleCurseforge, bootstrapPlus, bootstrapDash, bootstrapArrowDownCircleFill, bootstrapQuestionCircle }),
+      NgIconsModule.withIcons({ bootstrapClipboard, bootstrapDiscord, bootstrapChevronDoubleRight, bootstrapGithub, bootstrapGraphUpArrow, simpleCurseforge, bootstrapPlus, bootstrapDash, bootstrapArrowDownCircleFill, bootstrapQuestionCircle, bootstrapExclamationTriangleFill }),
       CountdownModule,
       AppRoutingModule,
       BaseChartDirective
