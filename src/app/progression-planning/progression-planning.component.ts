@@ -92,24 +92,31 @@ export class ProgressionPlanningComponent {
         this.UpdateUrl();
     }
     //#endregion
-    //#region honorGoal
-    private _honorGoal: number = 256000;
-    public get honorGoal(): number {
-        return this._honorGoal;
+    //#region targetRankNum
+    private _targetRankNum: number = Rank.MaxRankNum;
+    public get targetRankNum(): number {
+        return this._targetRankNum;
     }
 
     @Input()
-    public set honorGoal(value: number) {
+    public set targetRankNum(value: number) {
         if (isNaN(value)) {
-            this._honorGoal = 256000;
-        } else if (value < 0) {
-            this._honorGoal = 0;
-        } else if (value > 500000) {
-            this._honorGoal = 500000;
-        } else {
-            // make sure this is an integer
-            this._honorGoal = Math.trunc(value);
+            this._targetRankNum = Rank.MaxRankNum;
         }
+        else if (value < Rank.MinRankNum) {
+            this._targetRankNum = Rank.MinRankNum;
+        }
+        else if (value > Rank.MaxRankNum) {
+            this._targetRankNum = Rank.MaxRankNum;
+        } else {
+            this._targetRankNum = Number(value);
+        }
+
+        const rTarget = Rank.RankMap.get(this._targetRankNum);
+        if (!rTarget) {
+            throw new Error(`Could not find Rank ${this._targetRankNum} in RankMap`);
+        }
+        this.targetRank = rTarget;
 
         this.UpdateChart();
         this.UpdateUrl();
@@ -119,6 +126,7 @@ export class ProgressionPlanningComponent {
     dNow: Date = new Date();
     ranks: Array<number> = Array.from(Rank.RankMap.keys()).filter(n => n <= Rank.MaxRankNum);
     currentRank: Rank;
+    targetRank: Rank;
     @ViewChild(BaseChartDirective) _chart!: BaseChartDirective;
 
     public progressionChartData: ChartConfiguration<'line'>['data'] = {
@@ -131,17 +139,6 @@ export class ProgressionPlanningComponent {
                 borderColor: '#950101',
                 pointBackgroundColor: '#950101',
                 backgroundColor: '#950101',
-                yAxisID: 'CP',
-                xAxisID: 'Week',
-                stepped: true,
-            },
-            {
-                data: this.GenerateChartDataHonorGoal(),
-                label: 'Static Honor Goal',
-                fill: false,
-                borderColor: '#959501',
-                pointBackgroundColor: '#959501',
-                backgroundColor: '#959501',
                 yAxisID: 'CP',
                 xAxisID: 'Week',
                 stepped: true,
@@ -199,12 +196,21 @@ export class ProgressionPlanningComponent {
 
     constructor(private calculationService: CalculationService, private router: Router) {
         Chart.register(Annotation);
+
         const rCurrent = Rank.RankMap.get(this.currentRankNum);
         if (!rCurrent) {
             throw new Error(`Could not find Rank ${this.currentRankNum} in RankMap`);
         }
-
         this.currentRank = rCurrent;
+        
+        const rTarget = Rank.RankMap.get(this.targetRankNum);
+        if (!rTarget) {
+            throw new Error(`Could not find Rank ${this.targetRankNum} in RankMap`);
+        }
+        this.targetRank = rTarget;
+
+        this.UpdateChart();
+        this.UpdateUrl();
     }
 
     private GenerateChartLabels(): string[] {
@@ -249,37 +255,6 @@ export class ProgressionPlanningComponent {
         return data;
     }
 
-    private GenerateChartDataHonorGoal(): number[] {
-        if (this.currentRank == undefined) {
-            const rCurrent = Rank.RankMap.get(this.currentRankNum);
-            if (!rCurrent) {
-                throw new Error(`Could not find Rank ${this.currentRankNum} in RankMap`);
-            }
-
-            this.currentRank = rCurrent;
-        }
-
-        const data: number[] = [this.calculationService.CalculateCurrentRating(this.currentRank, this.rankProgress)];
-        let lastRank = this.currentRank;
-        let lastProgress = this.rankProgress;
-
-        for (let i = 0; i < this.numWeeks; i++) {
-            const nextRankNum = this.calculationService.CalculateNextRankNum(lastRank, lastProgress, this.honorGoal, 60);
-            const nextRank = Rank.RankMap.get(nextRankNum);
-            if (!nextRank) {
-                throw new Error(`Could not find Rank ${nextRankNum} in RankMap`);
-            }
-            const nextProgress = this.calculationService.CalculateNextRankPercentage(lastRank, lastProgress, this.honorGoal, 60);
-
-            data.push(this.calculationService.CalculateNextRating(lastRank, lastProgress, this.honorGoal, 60));
-
-            lastRank = nextRank;
-            lastProgress = nextProgress;
-        }
-
-        return data;
-    }
-
     private GenerateChartDataMinProgress(): number[] {
         if (this.currentRank == undefined) {
             const rCurrent = Rank.RankMap.get(this.currentRankNum);
@@ -308,24 +283,35 @@ export class ProgressionPlanningComponent {
             lastProgress = nextProgress;
         }
 
+        // 
+
         return data;
     }
     //#endregion
 
     private GenerateAnnotations(): AnnotationOptions[] {
+        if (this.targetRank == undefined) {
+            const rTarget = Rank.RankMap.get(this.targetRankNum);
+            if (!rTarget) {
+                throw new Error(`Could not find Rank ${this.targetRankNum} in RankMap`);
+            }
+
+            this.targetRank = rTarget;
+        }
+
         const annotations: AnnotationOptions[] = [];
         if (this.progressionChartData) {
             this.progressionChartData.datasets.forEach(set => {
                 if (set.data != null) {
                     const data = set.data.map(d => Number(d));
                     const maxValue = Math.max(...data);
-                    const maxValIndex = data.indexOf(maxValue);
+                    const targetIndex = data.findIndex((v) => v >= this.targetRank.CpRequirement);
 
                     annotations.push({
                         type: 'line',
                         scaleID: 'Week',
                         yScaleID: 'CP',
-                        value: maxValIndex,
+                        value: targetIndex,
                         yMin: 0,
                         yMax: maxValue,
                         borderColor: set.borderColor?.toString() ?? "white",
@@ -385,8 +371,7 @@ export class ProgressionPlanningComponent {
     UpdateChart(): void {
         this.progressionChartData.labels = this.GenerateChartLabels();
         this.progressionChartData.datasets[0].data = this.GenerateChartDataMaxProgress();
-        this.progressionChartData.datasets[1].data = this.GenerateChartDataHonorGoal();
-        this.progressionChartData.datasets[2].data = this.GenerateChartDataMinProgress();
+        this.progressionChartData.datasets[1].data = this.GenerateChartDataMinProgress();
         if (this._chart?.chart) {
             if(this._chart.chart.options.plugins?.annotation?.annotations) {
                 this._chart.chart.options.plugins.annotation.annotations = this.GenerateAnnotations();
@@ -397,7 +382,7 @@ export class ProgressionPlanningComponent {
     }
 
     UpdateUrl(): void {
-        this.router.navigate([ "/progression-planning", this.currentRankNum, this.rankProgress, this.numWeeks, this.honorGoal ]);
+        this.router.navigate([ "/progression-planning", this.currentRankNum, this.rankProgress, this.numWeeks, this.targetRankNum ]);
     }
 
     //#region Form Input Validation Methods

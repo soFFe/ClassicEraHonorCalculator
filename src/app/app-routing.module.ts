@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { CalculatorComponent } from './calculator/calculator.component';
 import { ProgressionPlanningComponent } from './progression-planning/progression-planning.component';
+import { FaqComponent } from './faq/faq.component';
 
 const appRoutes: Routes = [
     {
@@ -21,8 +22,12 @@ const appRoutes: Routes = [
         component: ProgressionPlanningComponent
     },
     {
-        path: 'progression-planning/:currentRankNum/:rankProgress/:numWeeks/:honorGoal',
+        path: 'progression-planning/:currentRankNum/:rankProgress/:numWeeks/:targetRankNum',
         component: ProgressionPlanningComponent
+    },
+    {
+        path: 'faq',
+        component: FaqComponent
     },
     { pathMatch: 'full', path: '', redirectTo: '/calculator' },
     { path: '**', redirectTo: '/calculator' }

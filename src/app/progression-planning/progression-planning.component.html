@@ -25,7 +25,7 @@
         </div>
         <div class="row mt-2">
             <div class="col">
-                <label for="numWeeks"># of Weeks</label>
+                <label for="numWeeks"># of Weeks in Chart</label>
                 <div class="input-group input-group-lg">
                     <input type="text" [(ngModel)]="numWeeks"
                     (beforeinput)="validateNumberBeforeInput($event, false)"
@@ -40,12 +40,15 @@
                 </div>
             </div>
             <div class="col">
-                <label for="honorGoal">Static Honor Goal</label>
+                <label for="targetRankNum">Target Rank</label>
                 <div class="input-group input-group-lg">
-                    <input type="text" [(ngModel)]="honorGoal"
-                    (beforeinput)="validateNumberBeforeInput($event, false)"
-                    (change)="validateNumberOnChange($event, 0, 500000)" class="form-control font-monospace"
-                    name="honorGoal" autocomplete="off" id="honorGoal" [placeholder]="honorGoal">
+                    <div class="input-group-text"><img [src]="'assets/rank-icons/' + targetRankNum + '.webp'"></div>
+                    <select class="form-select form-select-lg" [(ngModel)]="targetRankNum" name="targetRankNum"
+                        id="targetRankNum">
+                        <option *ngFor="let n of ranks.slice().reverse()" [ngValue]="n">
+                            Rank {{ n }}
+                        </option>
+                    </select>
                 </div>
             </div>
         </div>
