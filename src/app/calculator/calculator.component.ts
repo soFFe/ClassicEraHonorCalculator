@@ -9,7 +9,8 @@ import { CalculationService } from '../services/calculation.service';
     templateUrl: './calculator.component.html',
     styleUrls: ['./calculator.component.scss'],
     encapsulation: ViewEncapsulation.None,
-    providers: [CalculationService]
+    providers: [CalculationService],
+    standalone: false
 })
 export class CalculatorComponent {
     //#region characterLevel

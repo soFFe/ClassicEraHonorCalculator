@@ -15,10 +15,11 @@ const CountdownTimeUnits: Array<[string, number]> = [
     templateUrl: './header.component.html',
     styleUrls: ['./header.component.scss'],
     providers: [{
-        provide: APP_BASE_HREF,
-        useFactory: (pl: PlatformLocation) => pl.getBaseHrefFromDOM(),
-        deps: [PlatformLocation]
-    }]
+            provide: APP_BASE_HREF,
+            useFactory: (pl: PlatformLocation) => pl.getBaseHrefFromDOM(),
+            deps: [PlatformLocation]
+        }],
+    standalone: false
 })
 export class HeaderComponent {
     euResetTimerConfig: CountdownConfig = {

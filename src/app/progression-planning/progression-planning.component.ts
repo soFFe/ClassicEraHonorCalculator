@@ -11,7 +11,8 @@ import { Router } from '@angular/router';
     selector: 'app-progression-planning',
     templateUrl: './progression-planning.component.html',
     styleUrls: ['./progression-planning.component.scss'],
-    providers: [CalculationService]
+    providers: [CalculationService],
+    standalone: false
 })
 export class ProgressionPlanningComponent {
     //#region currentRankNum
