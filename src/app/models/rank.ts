@@ -44,25 +44,34 @@ export class Rank {
         this.Num = num;
         this.CpRequirement = cpRequirement;
         this.ChangeFactor = changeFactor;
-        const conversionBracket = this.GetConversionBracket();
-
-        if (conversionBracket.Id == 0) {
-            this.HonorRequirement = this.CpRequirement * conversionBracket.CpToHonorRate;
-        }
-        else if (conversionBracket.Id == 1) {
-            // this.HonorRequirement = R6.HonorRequirement + ([R7/R8/R9/R10].CpRequirement - R6.CpRequirement) * CpToHonorRate
-            this.HonorRequirement = 45000 + (this.CpRequirement - 20000) * conversionBracket.CpToHonorRate;
-        }
-        else {
-            // this.HonorRequirement = R10.HonorRequirement + ([R11/R12/R13/R14].CpRequirement - R10.CpRequirement) * CpToHonorRate
-            this.HonorRequirement = 175000 + (this.CpRequirement - 40000) * conversionBracket.CpToHonorRate;
-        }
-        this.HonorRequirement = Math.min(this.HonorRequirement, Rank.MaxHonor);
-
         this.Icon = `assets/rank-icons/${num}.webp`;
+        this.HonorRequirement = this._CalculateHonorRequirement();
     }
 
-    public GetConversionBracket(): ConversionBracket {
+    private _CalculateHonorRequirement(): number {
+        const conversionBracket = this._GetConversionBracket();
+        let honorRequirement = 0;
+
+        if (conversionBracket.Id == 0) {
+            // Conversion Bracket #0: R1-R6
+            honorRequirement = this.CpRequirement * conversionBracket.CpToHonorRate;
+        }
+        else if (conversionBracket.Id == 1) {
+            // Conversion Bracket #1: R7-R10
+            // this.HonorRequirement = R6.HonorRequirement + ([R7/R8/R9/R10].CpRequirement - R6.CpRequirement) * CpToHonorRate
+            honorRequirement = 45000 + (this.CpRequirement - 20000) * conversionBracket.CpToHonorRate;
+        }
+        else {
+            // Conversion Bracket #2: R11-R14
+            // this.HonorRequirement = R10.HonorRequirement + ([R11/R12/R13/R14].CpRequirement - R10.CpRequirement) * CpToHonorRate
+            honorRequirement = 175000 + (this.CpRequirement - 40000) * conversionBracket.CpToHonorRate;
+        }
+        honorRequirement = Math.min(honorRequirement, Rank.MaxHonor);
+
+        return honorRequirement;
+    }
+
+    private _GetConversionBracket(): ConversionBracket {
         let matchedBracket = 0;
         for (let i = 0; i < Rank.ConversionBrackets.length; i++) {
             const bracket = Rank.ConversionBrackets[i];
@@ -74,33 +83,6 @@ export class Rank {
 
         return Rank.ConversionBrackets[matchedBracket];
     }
-
-    //#region Calculation Methods
-    public CalculateRankQualificationReward(currentRankNum: number, currentRankProgressPercentage: number, previousRank: Rank): number {
-        let cpReward = (this.CpRequirement - previousRank.CpRequirement) * this.ChangeFactor;
-        if (currentRankNum == previousRank.Num) { // first bucket
-            // "V4 Calculation"
-            // This calculation has been introduced to prevent gaming the system by farming Dishonorable Kills
-            let cpCutOff = (this.CpRequirement - previousRank.CpRequirement) * this.ChangeFactor;
-            switch (currentRankNum) {
-                // special cases for the first bucket calculations of R9 and R11
-                case 9:
-                    cpCutOff = 3000;
-                    break;
-                case 11:
-                    cpCutOff = 2500;
-                    break;
-            }
-
-            cpReward = Math.min(
-                cpCutOff,
-                (this.CpRequirement - previousRank.CpRequirement) * (100 - currentRankProgressPercentage) / 100
-            );
-        }
-
-        return cpReward;
-    }
-    //#endregion
 
     //#region Static Members
     static MaxRankNum: number = 14;
@@ -143,7 +125,10 @@ export class Rank {
         [14, new Rank({ num: 14, cpRequirement: 60000, changeFactor: 0.34 })]
     ]);
 
-    // Experimental: My guess on Level Caps
+    // Experimental: My guess on Level Caps.
+    // Derived from the original Level Caps reported on vanilla-wiki and their percentage change in relation to MaxRP (65000 back then)
+    // Took those percentages and applied them to (presumably new?) MaxCP which could be 60000, as evidence suggested the 1-29 cap changed from 6500 to 6000.
+    // Probably not accurate, but more accurate than the old caps on vanilla-wiki according to the small amount of evidence provided by the community.
     static LevelCpCaps: {[level: number]: number} = {
         1: 6000,
         2: 6000,

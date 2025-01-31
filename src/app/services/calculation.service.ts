@@ -60,11 +60,46 @@ export class CalculationService {
         }
     }
 
+    /**
+     * @name CalculateRankQualificationReward
+     * @description Calculates the amount of CP awarded for qualifying for a single rank. With special cases for R9 and R11s first bucket
+     * @param qualifiedRankHigh This is usually the Qualified Rank, except in the case of the "Decay Prevention Hop". Its change Factor will be used.
+     * @param qualifiedRankLow This is one Rank lower than qualifiedRankHigh
+     */
+    public CalculateRankQualificationReward(currentRankNum: number, currentRankProgressPercentage: number, qualifiedRankLow: Rank, qualifiedRankHigh: Rank): number {
+        let cpReward = (qualifiedRankHigh.CpRequirement - qualifiedRankLow.CpRequirement) * qualifiedRankHigh.ChangeFactor;
+        if (currentRankNum == qualifiedRankLow.Num) { // first bucket
+            // "V4 Calculation"
+            // This calculation has been introduced to prevent gaming the system by farming Dishonorable Kills
+            let cpCutOff = (qualifiedRankHigh.CpRequirement - qualifiedRankLow.CpRequirement) * qualifiedRankHigh.ChangeFactor;
+            switch (currentRankNum) {
+                // special cases for the first bucket calculations of R9 and R11
+                case 9:
+                    cpCutOff = 3000;
+                    break;
+                case 11:
+                    cpCutOff = 2500;
+                    break;
+            }
+
+            cpReward = Math.min(
+                cpCutOff,
+                (qualifiedRankHigh.CpRequirement - qualifiedRankLow.CpRequirement) * (100 - currentRankProgressPercentage) / 100
+            );
+        }
+
+        return cpReward;
+    }
+
     CalculateMaxRatingGain(currentRank: Rank, rankProgress: number): number {
         const maxQualifiedRanks = this.CalculateQualifiedRanks(currentRank, Rank.MaxHonor);
         return this.CalculateRatingGain(currentRank, rankProgress, maxQualifiedRanks);
     }
 
+    /**
+     * @name CalculateRatingGain
+     * @description Predicts the amount of CP Gained within a Week by adding up Qualification Rewards for the qualified Ranks and adds the Bonus CP if necessary
+     */
     CalculateRatingGain(currentRank: Rank, rankProgress: number, qualifiedRanks: Rank[]): number {
         let cpSum = 0;
 
@@ -73,15 +108,21 @@ export class CalculationService {
             for (let i = 0; i < qualifiedRanks.length; i++) {
                 const rank = qualifiedRanks[i];
                 if (rank.Num == currentRank.Num) {
-                    // we get the same amount of reward of the next rank by only qualifying for the current rank
                     if (qualifiedRanks.length == 1) {
+                        // "Decay Prevention Hop"
+                        // we get the same amount of reward of the next rank by exclusively qualifying for the current rank
+                        // why, blizzard?
                         const nextRank = Rank.RankMap.get(Math.min(Rank.MaxRankNum, rank.Num + 1));
                         if (!nextRank) {
                             throw new Error(`Could not find Rank ${rank.Num + 1} in RankMap`);
                         }
 
-                        cpSum += nextRank.CalculateRankQualificationReward(currentRank.Num, rankProgress, rank);
+                        cpSum += this.CalculateRankQualificationReward(currentRank.Num, rankProgress, rank, nextRank);
                     }
+
+                    // we skip adding the same-rank reward if we qualified for at least the next higher rank.
+                    // this is just my method of making sure the "Decay Prevention Hop" gets calculated in the special case above
+                    // but not in any other case.
                     continue;
                 }
 
@@ -91,12 +132,12 @@ export class CalculationService {
                         throw new Error(`Could not find Rank ${rank.Num - 1} in RankMap`);
                     }
                     else {
-                        // Rank 1s Reward is 0 anyway, no need to calculate anything
+                        // Because Rank 1s Reward is 0, no need to calculate anything
                         continue;
                     }
                 }
 
-                cpSum += rank.CalculateRankQualificationReward(currentRank.Num, rankProgress, previousRank);
+                cpSum += this.CalculateRankQualificationReward(currentRank.Num, rankProgress, previousRank, rank);
             }
 
             cpSum += this.CalculateBonusCp(currentRank, qualifiedRanks);
