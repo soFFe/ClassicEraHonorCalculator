@@ -42,6 +42,29 @@ These are equal for all Ranks within the Bracket.
 ## Decay
 Decay has been removed completely. The only way you can lose Rank or Progress is by killing Civilian NPCs.
 
+## Bonus CP + R9 and R11s Special Cases
+Don't know why these exist, but you get bonus CP for these cases.
+"Buckets" refers to the Qualified Ranks within this week. So the amount of additional ranks you qualified for (above the current rank) is the amount of Buckets.
+| Current Rank | Bucket 1 Bonus CP | Bucket 2 Bonus CP | Bucket 3 BonusCP | Bucket 4 BonusCP |
+|:------------:|:-----------------:|:-----------------:|:----------------:|:----------------:|
+|           R6 | 0                 | 0                 | 0                | 500              |
+|           R7 | 0                 | 0                 | 500              | 500              |
+|           R8 | 0                 | 500               | 500              | 1000             |
+|           R9 | 0                 | 0                 | 500              | 500              |
+|          R10 | 0                 | 500               | 500              | 500              |
+Additionally, the Rank Reward Calculation for R9 and R11 specifically changed when Blizzard introduced a patch after players gamed the system by farming Dishonorable Kills.
+R9s First Bucket Reward is capped to 3000
+R11s First Bucket Reward is capped to 2500
+This might be a semantic error which I could not solve yet. However, the results are accurate using this method.
+
+## Decay Prevention Hop
+If you only qualify for the same Rank you currently are, you get the Reward of the next-higher Rank instead.
+
+For example if you are currently Rank 7 and qualify only for Rank 7, you will receive the Reward for Rank 8.
+If you qualify for Rank 8 however, you still only receive the Reward for Rank 8.
+
+This behavior results in Rank 1 being skipped over entirely, as if you only hit Rank 1s requirement (15 Honorable Kills), you get Rank 2's Reward CP (Rating) awarded to you, which in turn is the minimum requirement to be Rank 2.
+
 ## References
 - [1.15 Decay Removal Announcement](https://us.forums.blizzard.com/en/wow/t/classic-era-pvp-update-december-5/1724481)
 - [Dishonorable Kills Change](https://us.forums.blizzard.com/en/wow/t/so-how-does-this-dishonorable-kill-system-work/1664598/38)
@@ -50,6 +73,6 @@ Decay has been removed completely. The only way you can lose Rank or Progress is
 - [Beastinblack-Firemaw's Calculation Google Doc](https://docs.google.com/spreadsheets/d/1vX1eXeDflKf7mC1PHm_5OhSKv6LjjjZEe3DzWHqyCKM/copy)
 
 ## Build Dependencies
-- Angular 17
+- Angular 19
 - node
 - npm
