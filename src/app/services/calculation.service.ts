@@ -33,12 +33,12 @@ export class CalculationService {
             .filter(r => r.Num > currentRank.Num && r.Num <= Math.min(currentRank.Num + Rank.MaxRankQualifications, Rank.MaxRankNum));
         
         if (maxQualifiedRanks.length > 1) {
-            return currentRank.CalculateMinHonorForRankQualification(maxQualifiedRanks[maxQualifiedRanks.length - 1]);
+            return maxQualifiedRanks[maxQualifiedRanks.length - 1].HonorRequirement
         }
         else { // R14 or R13
             // due to how qualifying for the same rank will give you the same amount of progress as qualifying for the next higher rank,
             // the minimum for R13 here is 418750, not 500k
-            return currentRank.CalculateMinHonorForRankQualification(currentRank);
+            return currentRank.HonorRequirement;
         }
     }
 
