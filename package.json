@@ -24,7 +24,7 @@
     "@angular/router": "^19.0.5",
     "@ng-bootstrap/ng-bootstrap": "^18.0.0",
     "@ng-icons/bootstrap-icons": "^27.1.0",
-    "@ng-icons/core": "^27.1.0",
+    "@ng-icons/core": "^30.3.0",
     "@ng-icons/simple-icons": "^27.1.0",
     "@popperjs/core": "^2.11.8",
     "bootstrap": "^5.3.1",
