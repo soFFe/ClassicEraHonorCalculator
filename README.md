@@ -54,8 +54,11 @@ Don't know why these exist, but you get bonus CP for these cases.
 |          R10 | 0                 | 500               | 500              | 500              |
 
 Additionally, the Rank Reward Calculation for R9 and R11 specifically changed when Blizzard introduced a patch after players gamed the system by farming Dishonorable Kills.
+
 R9s First Bucket Reward is capped to 3000
+
 R11s First Bucket Reward is capped to 2500
+
 This might be a semantic error which I could not solve yet. However, the results are accurate using this method.
 
 ## Decay Prevention Hop

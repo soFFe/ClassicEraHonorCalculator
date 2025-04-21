@@ -21,7 +21,7 @@ describe('CalculationServiceService', () => {
         expect(service).toBeTruthy();
     });
 
-    it('same rank qualification reward', () => {
+    it('same rank qualification reward (decay prevention hop)', () => {
         const currentRank = Rank.RankMap.get(13);
         if (!currentRank) {
             fail("CurrentRank could not be resolved for Rank 13");
@@ -29,10 +29,14 @@ describe('CalculationServiceService', () => {
         }
         const rankProgress = 0;
         const honorFarmed = 418750;
-        const characterLevel = 60;
 
-        expect(service.CalculateNextRankNum(currentRank, rankProgress, honorFarmed, characterLevel)).toBe(13);
-        expect(service.CalculateNextRankPercentage(currentRank, rankProgress, honorFarmed, characterLevel)).toBeCloseTo(34);
+        const qualifiedRanks418k = service.CalculateQualifiedRanks(currentRank, honorFarmed);
+        const ratingGain418k = service.CalculateRatingGain(currentRank, rankProgress, qualifiedRanks418k);
+
+        const qualifiedRanks500k = service.CalculateQualifiedRanks(currentRank, Rank.MaxHonor); // Rank.MaxHonor is 500k
+        const ratingGain500k = service.CalculateRatingGain(currentRank, rankProgress, qualifiedRanks500k);
+
+        expect(ratingGain418k).toBe(ratingGain500k); // doing 418k (R13 qualificatioN) or 500k (R14 qualification) nets you the same reward (R14 Qualification reward)
     });
 
     mockWeek4Data.forEach((e, i) => {

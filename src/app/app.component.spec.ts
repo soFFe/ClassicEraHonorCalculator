@@ -16,22 +16,20 @@ import { ProgressionPlanningComponent } from './progression-planning/progression
 describe('AppComponent', () => {
   beforeEach(() => TestBed.configureTestingModule({
     providers: [provideCharts(withDefaultRegisterables())],
-    declarations: [
-      AppComponent,
-      CalculatorComponent,
-      HeaderComponent,
-      FooterComponent,
-      ProgressionPlanningComponent
-    ],
     imports: [
-      BrowserModule,
-      FormsModule,
-      NgIconsModule.withIcons({ bootstrapClipboard, bootstrapDiscord, bootstrapChevronDoubleRight, bootstrapGithub, bootstrapGraphUpArrow, simpleCurseforge, bootstrapPlus, bootstrapDash, bootstrapArrowDownCircleFill, bootstrapQuestionCircle, bootstrapExclamationTriangleFill }),
-      CountdownModule,
-      AppRoutingModule,
-      BaseChartDirective
+        BrowserModule,
+        FormsModule,
+        NgIconsModule.withIcons({ bootstrapClipboard, bootstrapDiscord, bootstrapChevronDoubleRight, bootstrapGithub, bootstrapGraphUpArrow, simpleCurseforge, bootstrapPlus, bootstrapDash, bootstrapArrowDownCircleFill, bootstrapQuestionCircle, bootstrapExclamationTriangleFill }),
+        CountdownModule,
+        AppRoutingModule,
+        BaseChartDirective,
+        CalculatorComponent,
+        HeaderComponent,
+        FooterComponent,
+        ProgressionPlanningComponent,
+        AppComponent
     ],
-  }));
+}));
 
   it('should create the app', () => {
     const fixture = TestBed.createComponent(AppComponent);

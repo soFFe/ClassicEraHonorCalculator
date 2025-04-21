@@ -6,10 +6,9 @@ import { simpleCurseforge } from '@ng-icons/simple-icons';
 
 describe('CalculatorComponent', () => {
   beforeEach(() => TestBed.configureTestingModule({
-    declarations: [CalculatorComponent],
     providers: [{ provider: ComponentFixtureAutoDetect, useValue: true }],
-    imports: [NgIconsModule.withIcons({ bootstrapClipboard, bootstrapDiscord, bootstrapChevronDoubleRight, bootstrapGithub, bootstrapGraphUpArrow, simpleCurseforge, bootstrapPlus, bootstrapDash, bootstrapArrowDownCircleFill, bootstrapQuestionCircle })]
-  }));
+    imports: [NgIconsModule.withIcons({ bootstrapClipboard, bootstrapDiscord, bootstrapChevronDoubleRight, bootstrapGithub, bootstrapGraphUpArrow, simpleCurseforge, bootstrapPlus, bootstrapDash, bootstrapArrowDownCircleFill, bootstrapQuestionCircle }), CalculatorComponent]
+}));
 
   it('should create the component', () => {
     const fixture = TestBed.createComponent(CalculatorComponent);

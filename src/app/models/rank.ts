@@ -1,4 +1,5 @@
 import { ConversionBracket } from "./conversionBracket";
+import { RankName } from "./rankName";
 
 export class Rank {
     private _Num!: number;
@@ -6,6 +7,7 @@ export class Rank {
     private _ChangeFactor!: number;
     private _HonorRequirement!: number;
     private _Icon!: string;
+    private _Name!: RankName;
 
     //#region Property Getters & Setters
     public get Num(): number {
@@ -38,12 +40,19 @@ export class Rank {
     private set HonorRequirement(value: number) {
         this._HonorRequirement = value;
     }
+    public get Name(): RankName {
+        return this._Name;
+    }
+    public set Name(value: RankName) {
+        this._Name = value;
+    }
     //#endregion
 
-    constructor({ num, cpRequirement, changeFactor }: { num: number; cpRequirement: number; changeFactor: number; }) {
+    constructor({ num, cpRequirement, changeFactor, name }: { num: number; cpRequirement: number; changeFactor: number; name: RankName; }) {
         this.Num = num;
         this.CpRequirement = cpRequirement;
         this.ChangeFactor = changeFactor;
+        this.Name = name;
         this.Icon = `assets/rank-icons/${num}.webp`;
         this.HonorRequirement = this._CalculateHonorRequirement();
     }
@@ -84,11 +93,49 @@ export class Rank {
         return Rank.ConversionBrackets[matchedBracket];
     }
 
+    //#region Static Methods
+    /**
+     * @name GetRankFromRating
+     * @description Checks rank requirements met with provided rating and returns the highest rank we met the requirements of
+     */
+    static GetRankFromRating(rating: number): Rank {
+        const rankRequirementsMet = Array.from(Rank.RankMap.values()).filter(r => rating >= r.CpRequirement);
+        if (rankRequirementsMet.length > 0) {
+            return rankRequirementsMet[rankRequirementsMet.length - 1];
+        }
+        else {
+            throw new Error(`Could not fetch rank from rating ${rating}, because we have not met any Rank Requirements. This should never happen.`);
+        }
+    }
+
+    /**
+     * @name GetRankPercentageFromRating
+     * @description Calculates the percentage of progress into the next higher rank of the provided rating
+     */
+    static GetRankPercentageFromRating(rating: number): number {
+        const ratingRank = this.GetRankFromRating(rating);
+        const cpAboveRequirement = rating - ratingRank.CpRequirement;
+        let nextRankMaxCp = 0;
+        if (ratingRank.Num >= Rank.MaxRankNum) {
+            nextRankMaxCp = Rank.MaxCp;
+        }
+        else {
+            const plusOneRank = Rank.RankMap.get(ratingRank.Num + 1);
+            if (!plusOneRank) {
+                throw new Error(`Could not calculate rank percentage for rating ${rating}, because we could not find Rank ${ratingRank.Num + 1} in RankMap`);
+            }
+            nextRankMaxCp = plusOneRank.CpRequirement;
+        }
+
+        return cpAboveRequirement / (nextRankMaxCp - ratingRank.CpRequirement) * 100;
+    }
+    //#endregion
+
     //#region Static Members
     static MaxRankNum: number = 14;
     static MinRankNum: number = 1;
     static MaxHonor: number = 500000;
-    static MaxCp: number = 60000;
+    static MaxCp: number = 65000;
     static MaxDecayCp: number = 2500;
     static MaxRankQualifications: number = 4;
 
@@ -109,20 +156,20 @@ export class Rank {
 
     // These values have been provided by blizzard in a blue post
     static RankMap: Map<number, Rank> = new Map([
-        [1, new Rank({ num: 1, cpRequirement: 0, changeFactor: 1 })],
-        [2, new Rank({ num: 2, cpRequirement: 2000, changeFactor: 1 })],
-        [3, new Rank({ num: 3, cpRequirement: 5000, changeFactor: 1 })],
-        [4, new Rank({ num: 4, cpRequirement: 10000, changeFactor: 0.8 })],
-        [5, new Rank({ num: 5, cpRequirement: 15000, changeFactor: 0.8 })],
-        [6, new Rank({ num: 6, cpRequirement: 20000, changeFactor: 0.8 })],
-        [7, new Rank({ num: 7, cpRequirement: 25000, changeFactor: 0.7 })],
-        [8, new Rank({ num: 8, cpRequirement: 30000, changeFactor: 0.7 })],
-        [9, new Rank({ num: 9, cpRequirement: 35000, changeFactor: 0.6 })],
-        [10, new Rank({ num: 10, cpRequirement: 40000, changeFactor: 0.5 })],
-        [11, new Rank({ num: 11, cpRequirement: 45000, changeFactor: 0.5 })],
-        [12, new Rank({ num: 12, cpRequirement: 50000, changeFactor: 0.4 })],
-        [13, new Rank({ num: 13, cpRequirement: 55000, changeFactor: 0.4 })],
-        [14, new Rank({ num: 14, cpRequirement: 60000, changeFactor: 0.34 })]
+        [1, new Rank({ num: 1, cpRequirement: 0, changeFactor: 1, name: { Alliance: "Private", Horde: "Scout" } })],
+        [2, new Rank({ num: 2, cpRequirement: 2000, changeFactor: 1, name: { Alliance: "Corporal", Horde: "Grunt" } })],
+        [3, new Rank({ num: 3, cpRequirement: 5000, changeFactor: 1, name: { Alliance: "Sergeant", Horde: "Sergeant" } })],
+        [4, new Rank({ num: 4, cpRequirement: 10000, changeFactor: 0.8, name: { Alliance: "Master Sergeant", Horde: "Senior Sergeant" } })],
+        [5, new Rank({ num: 5, cpRequirement: 15000, changeFactor: 0.8, name: { Alliance: "Sergeant Major", Horde: "First Sergeant" } })],
+        [6, new Rank({ num: 6, cpRequirement: 20000, changeFactor: 0.8, name: { Alliance: "Knight", Horde: "Stone Guard" } })],
+        [7, new Rank({ num: 7, cpRequirement: 25000, changeFactor: 0.7, name: { Alliance: "Knight-Lieutenant", Horde: "Blood Guard" } })],
+        [8, new Rank({ num: 8, cpRequirement: 30000, changeFactor: 0.7, name: { Alliance: "Knight-Captain", Horde: "Legionnaire" } })],
+        [9, new Rank({ num: 9, cpRequirement: 35000, changeFactor: 0.6, name: { Alliance: "Knight-Champion", Horde: "Centurion" } })],
+        [10, new Rank({ num: 10, cpRequirement: 40000, changeFactor: 0.5, name: { Alliance: "Lieutenant Commander", Horde: "Champion" } })],
+        [11, new Rank({ num: 11, cpRequirement: 45000, changeFactor: 0.5, name: { Alliance: "Commander", Horde: "Lieutenant General" } })],
+        [12, new Rank({ num: 12, cpRequirement: 50000, changeFactor: 0.4, name: { Alliance: "Marshal", Horde: "General" } })],
+        [13, new Rank({ num: 13, cpRequirement: 55000, changeFactor: 0.4, name: { Alliance: "Field Marshal", Horde: "Warlord" } })],
+        [14, new Rank({ num: 14, cpRequirement: 60000, changeFactor: 0.34, name: { Alliance: "Grand Marshal", Horde: "High Warlord" } })]
     ]);
 
     // Experimental: My guess on Level Caps.
@@ -188,7 +235,7 @@ export class Rank {
         56: 50400,
         57: 52800,
         58: 55200,
-        59: 57600,
+        59: 60000, // inconsistent with my theory, however there have been confirmed lvl 59 rank 14s
         60: this.MaxCp
     }
     //#endregion

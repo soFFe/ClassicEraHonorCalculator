@@ -3,14 +3,26 @@ import { Rank } from '../models/rank';
 import { QualificationMilestone } from '../models/qualificationMilestone';
 import { Router } from '@angular/router';
 import { CalculationService } from '../services/calculation.service';
+import { RankingResult } from '../models/rankingResult';
+import { NgbCollapseModule, NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { NgIcon } from '@ng-icons/core';
+import { FormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
+import { RankingResultTotal } from '../models/rankingResultTotal';
 
 @Component({
     selector: 'calculator-root',
     templateUrl: './calculator.component.html',
     styleUrls: ['./calculator.component.scss'],
+    imports: [
+        FormsModule,
+        CommonModule,
+        NgIcon,
+        NgbModule,
+        NgbCollapseModule
+    ],
     encapsulation: ViewEncapsulation.None,
-    providers: [CalculationService],
-    standalone: false
+    providers: [CalculationService]
 })
 export class CalculatorComponent {
     //#region characterLevel
@@ -36,6 +48,7 @@ export class CalculatorComponent {
         }
 
         this.updateUrl();
+        this.CalculateResults();
     }
     //#endregion
     //#region currentRankNum
@@ -51,6 +64,7 @@ export class CalculatorComponent {
         }
         else if (value < Rank.MinRankNum) {
             this._currentRankNum = Rank.MinRankNum;
+            this.rankProgress = "0";
         }
         else if (value > Rank.MaxRankNum) {
             this._currentRankNum = Rank.MaxRankNum;
@@ -64,9 +78,45 @@ export class CalculatorComponent {
         }
 
         this.currentRank = rCurrent;
+
+        if(this.currentRankNum > this.targetRankNum)
+        {
+            this.targetRankNum = this.currentRankNum;
+        }
         this.qualificationMilestones = this.DisplayQualificationMilestones();
         this.updateUrl();
+        this.CalculateResults();
     }
+    //#endregion
+    //#region targetRankNum
+    private _targetRankNum: number = 14;
+    public get targetRankNum(): number {
+        return this._targetRankNum;
+    }
+
+    @Input()
+    public set targetRankNum(value: number) {
+        if (isNaN(value)) {
+            this._targetRankNum = Rank.MaxRankNum;
+        }
+        else if (value < this.currentRankNum) {
+            this._targetRankNum = this.currentRankNum;
+        }
+        else if (value > Rank.MaxRankNum) {
+            this._targetRankNum = Rank.MaxRankNum;
+        } else {
+            this._targetRankNum = Number(value);
+        }
+
+        const rTarget = Rank.RankMap.get(this._targetRankNum);
+        if (!rTarget) {
+            throw new Error(`Could not find Rank ${this._targetRankNum} in RankMap`);
+        }
+
+        this.targetRank = rTarget;
+        this.CalculateResults();
+    }
+    
     //#endregion
     //#region rankProgress
     private _rankProgress: number = 0;
@@ -89,6 +139,7 @@ export class CalculatorComponent {
             this._rankProgress = Number(value);
 
         this.updateUrl();
+        this.CalculateResults();
     }
     //#endregion
     //#region honorFarmed
@@ -108,23 +159,221 @@ export class CalculatorComponent {
         else
             this._honorFarmed = Number(value);
 
-        this.updateUrl();
+        if(!this.bIsDraggingRangeInput)
+        {
+            this.updateUrl();
+        }
+
+        this.CalculateResults();
     }
     //#endregion
+    //#region factionNames
+    private _factionNames: number = 0;
+    public get factionNames(): number {
+        return this._factionNames;
+    }
+
+    @Input()
+    public set factionNames(value: number) {
+        if (isNaN(value))
+            this._factionNames = 0;
+        else if(value < 0)
+            this._factionNames = 0;
+        else if(value > 3)
+            this._factionNames = 0;
+        else
+            this._factionNames = Number(value);
+    }
+    //#endregion
+    bIsDraggingRangeInput = false; // save performance by updating the Url only when we stop dragging the range input
+    detailedInfoIsCollapsed = true;
 
     qualificationMilestones: QualificationMilestone[];
-    ranks: Array<number> = Array.from(Rank.RankMap.keys()).filter(n => n <= Rank.MaxRankNum);
+    ranks: Array<Rank> = Array.from(Rank.RankMap.values());
     currentRank: Rank;
+    targetRank: Rank;
+    rankingResult!: RankingResult;
+    maxRankingResult!: RankingResult;
+    optimalPath!: RankingResultTotal;
 
     constructor(private router: Router, private calculationService: CalculationService) {
         const rCurrent = Rank.RankMap.get(this.currentRankNum);
         if (!rCurrent) {
             throw new Error(`Could not find Rank ${this.currentRankNum} in RankMap`);
         }
-
         this.currentRank = rCurrent;
+
+        const rTarget = Rank.RankMap.get(this.targetRankNum);
+        if (!rTarget) {
+            throw new Error(`Could not find Rank ${this.targetRankNum} in RankMap`);
+        }
+        this.targetRank = rTarget;
+
         this.qualificationMilestones = this.DisplayQualificationMilestones();
+        this.CalculateResults();
     }
+
+    CalculateResults() {
+        this.rankingResult = new RankingResult(
+            this.calculationService.CalculateCurrentRating(this.currentRank, this.rankProgress),
+            this.calculationService.CalculateNextRating(this.currentRank, this.rankProgress, this.honorFarmed, this.characterLevel),
+            this.honorFarmed
+        );
+        this.maxRankingResult = new RankingResult(
+            this.calculationService.CalculateCurrentRating(this.currentRank, this.rankProgress),
+            this.calculationService.CalculateCurrentRating(this.currentRank, this.rankProgress) + this.calculationService.CalculateMaxRatingGain(this.currentRank, this.rankProgress),
+            this.calculationService.CalculateMinimumHonorForRatingGain(this.currentRank, this.rankProgress, this.calculationService.CalculateMaxRatingGain(this.currentRank, this.rankProgress))
+        );
+        this.optimalPath = this.CalculateOptimalPath(this.currentRank, this.rankProgress, this.targetRank);
+    }
+
+    //#region Optimal Path
+    CalculateOptimalPath(startRank: Rank, startRankProgress: number, endRank: Rank) {
+        const stepsTaken: Array<RankingResult> = [];
+        let honorTotal = 0;
+        let currentRank = startRank;
+        let currentRankProgress = startRankProgress;
+        let currentRating = this.calculationService.CalculateCurrentRating(currentRank, currentRankProgress);
+        let i = 0;
+        if(currentRating >= endRank.CpRequirement)
+        {
+            return new RankingResultTotal([new RankingResult(currentRating, currentRating, 0)], 0, 0);
+        }
+
+        // just iterate through the weeks to find the lowest amount of weeks possible, as this is our first priority
+        for(; i < 20; i++)
+        {
+            const maxRatingGain = this.calculationService.CalculateMaxRatingGain(currentRank, currentRankProgress); // go for the highest available milestone every week
+            const minHonor = this.calculationService.CalculateMinimumHonorForRatingGain(currentRank, currentRankProgress, maxRatingGain); // make sure we're making use of the decay prevention hop, bonusCP and R9/R11 special cases
+
+            const result = new RankingResult(currentRating, currentRating + maxRatingGain, minHonor);
+            stepsTaken.push(result);
+            honorTotal += minHonor;
+
+            if(currentRating + maxRatingGain >= endRank.CpRequirement)
+            {
+                break;
+            }
+
+            currentRating += maxRatingGain;
+            currentRank = Rank.GetRankFromRating(currentRating);
+            currentRankProgress = Rank.GetRankPercentageFromRating(currentRating);
+        }
+
+        const firstTry = new RankingResultTotal(stepsTaken, honorTotal, i);
+        
+        // okay we found the lowest amount of weeks possible. now try to minimize the honor necessary to reach our goal by exploring other possibilities
+        const allPaths = this.ExploreAllPathOptions(endRank, firstTry);
+
+        return this.ChooseBestPathOption(allPaths);
+    }
+
+    ExploreAllPathOptions(endRank: Rank, firstTry: RankingResultTotal)
+    {
+        const allPossiblePaths: Array<RankingResultTotal> = [firstTry];
+        
+        for(let i = 0; i < firstTry.StepsTaken.length; i++)
+        {
+            // are there any alternative options for this step?
+            const stepRanksQualified = this.calculationService.CalculateQualifiedRanks(firstTry.StepsTaken[i].StartRank, firstTry.StepsTaken[i].HonorTotal);
+            if(stepRanksQualified.length < 1)
+            {
+                throw new Error("Something went incredibly wrong");
+            }
+            else if(stepRanksQualified.length == 1 || stepRanksQualified.length == 2) // first two qualifications are basically one and the same due to the decay prevention hop
+            {
+                // there was only one possibility - skip this step, as it is undeniably an essential amount of honor
+                continue;
+            }
+            else // length is 3, 4 or 5 (qualified for starting Rank +2, +3 or +4)
+            {
+                // there are other options
+                stepRanksQualified.pop(); // last time we hit the highest milestone here, so let's delete that from the array
+                const numAlternativeOptions = stepRanksQualified.length - 1; // -1 as the second milestone is worthless because of the decay prevention hop, so it's not a real option.
+                
+                for(let option = numAlternativeOptions; option > 0; option--) // loop through options as long as there are options (> 0)
+                {
+                    const stepsTaken = firstTry.StepsTaken.slice(0, i); // copy firstTry's path up until here, since we only wanna start departing from here
+                    let honorTotal = 0;
+                    stepsTaken.forEach(step => honorTotal += step.HonorTotal); // sum honorTotal up until here
+                    if(numAlternativeOptions == 1)
+                    {
+                        // we want to use the decay prevention hop ideally, so we pop the useless milestone to minimize our honor (only happens if the original stepRanksQualified length was 3)
+                        stepRanksQualified.pop();
+                    }
+                    
+                    // go through the motions otherwise and see where we end up
+                    let reachedGoalInTime = false;
+                    let currentRank = firstTry.StepsTaken[i].StartRank;
+                    let currentRankProgress = firstTry.StepsTaken[i].StartRankPercentage;
+                    let currentRating = this.calculationService.CalculateCurrentRating(currentRank, currentRankProgress);
+                    let weekIndex = i;
+                    for(; weekIndex < firstTry.StepsTaken.length; weekIndex++)
+                    {
+                        let maxRatingGain = this.calculationService.CalculateMaxRatingGain(currentRank, currentRankProgress); // go for the highest available milestone every week
+                        if(weekIndex == i) // except for the week we wanna change
+                        {
+                            maxRatingGain = this.calculationService.CalculateRatingGain(currentRank, currentRankProgress, stepRanksQualified.slice(0, option + 1));
+                        }
+                        const minHonor = this.calculationService.CalculateMinimumHonorForRatingGain(currentRank, currentRankProgress, maxRatingGain); // make sure we're making use of the decay prevention hop, bonusCP and R9/R11 special cases
+
+                        const result = new RankingResult(currentRating, currentRating + maxRatingGain, minHonor);
+                        stepsTaken.push(result);
+                        honorTotal += minHonor;
+
+                        if(currentRating + maxRatingGain >= endRank.CpRequirement)
+                        {
+                            reachedGoalInTime = true;
+                            break;
+                        }
+
+                        currentRating += maxRatingGain;
+                        currentRank = Rank.GetRankFromRating(currentRating);
+                        currentRankProgress = Rank.GetRankPercentageFromRating(currentRating);
+                    }
+
+                    if(reachedGoalInTime)
+                    {
+                        // this is a possible path, save it
+                        allPossiblePaths.push(new RankingResultTotal(stepsTaken, honorTotal, weekIndex));
+                    }
+
+                    stepRanksQualified.pop(); // remove our used alternative from the array
+                }
+            }
+        }
+        
+        return allPossiblePaths;
+    }
+
+    ChooseBestPathOption(results: RankingResultTotal[]): RankingResultTotal
+    {
+        if(results.length <= 0)
+        {
+            throw new Error("ChooseBestPathOption was given an empty array");
+        }
+        else if(results.length > 1)
+        {
+            let bestResult = results[0];
+
+            for(let i = 1; i < results.length; i++)
+            {
+                const currentEntry = results[i];
+                if(currentEntry.WeeksTotal < bestResult.WeeksTotal)
+                    bestResult = currentEntry;
+                else if(currentEntry.WeeksTotal == bestResult.WeeksTotal && currentEntry.HonorTotal < bestResult.HonorTotal)
+                    bestResult = currentEntry;
+                else if(currentEntry.WeeksTotal == bestResult.WeeksTotal && currentEntry.HonorTotal <= bestResult.HonorTotal && currentEntry.EndRank > bestResult.EndRank)
+                    bestResult = currentEntry;
+            }
+
+            return bestResult;
+        }
+        
+        // results.length is 1
+        return results[0]; // nothing to choose, our only option is the best option
+    }
+    //#endregion
 
     //#region Display Methods
     DisplayMaxRatingGain(): number {
@@ -132,7 +381,7 @@ export class CalculatorComponent {
     }
 
     DisplayNextRankIconUrl(): string {
-        return this.DisplayRankIconUrl(this.calculationService.CalculateNextRankNum(this.currentRank, this.rankProgress, this.honorFarmed, this.characterLevel));
+        return this.DisplayRankIconUrl(this.rankingResult.EndRank.Num);
     }
 
     DisplayRankIconUrl(rankNum: number): string {
@@ -163,10 +412,6 @@ export class CalculatorComponent {
             return 1; // you are always qualified for Rank 1
     }
 
-    DisplayNextRankPercentage(): string {
-        return this.calculationService.CalculateNextRankPercentage(this.currentRank, this.rankProgress, this.honorFarmed, this.characterLevel).toFixed(2);
-    }
-
     DisplayQualificationMilestones(): QualificationMilestone[] {
         const maxQualifiedRanks = Array.from(Rank.RankMap.values())
             .filter(r => r.Num >= this.currentRankNum && r.Num != this.currentRankNum + 1 && r.Num <= Math.min(this.currentRankNum + Rank.MaxRankQualifications, Rank.MaxRankNum), this);
@@ -188,27 +433,15 @@ export class CalculatorComponent {
     }
 
     DisplayCurrentRating(): number {
-        return Math.round(this.calculationService.CalculateCurrentRating(this.currentRank, this.rankProgress));
+        return Math.round(this.rankingResult.StartRating);
     }
 
     DisplayNextRating(): number {
-        return Math.round(this.calculationService.CalculateNextRating(this.currentRank, this.rankProgress, this.honorFarmed, this.characterLevel));
+        return Math.round(this.rankingResult.EndRating);
     }
 
     DisplayRatingChange(): number {
-        return Math.round(this.calculationService.CalculateNextRating(this.currentRank, this.rankProgress, this.honorFarmed, this.characterLevel) - this.calculationService.CalculateCurrentRating(this.currentRank, this.rankProgress));
-    }
-
-    DisplayNextRankNum(): number {
-        return this.calculationService.CalculateNextRankNum(this.currentRank, this.rankProgress, this.honorFarmed, this.characterLevel);
-    }
-
-    DisplayMaxNextRankNum(): number {
-        return this.calculationService.CalculateMaxNextRankNum(this.currentRank, this.rankProgress);
-    }
-
-    DisplayMaxNextRankPercentage(): string {
-        return this.calculationService.CalculateMaxNextRankPercentage(this.currentRank, this.rankProgress).toFixed(2);
+        return Math.round(this.rankingResult.EndRating - this.rankingResult.StartRating);
     }
 
     DisplayMilestoneProgress(ms: QualificationMilestone, index: number): number {
@@ -217,7 +450,7 @@ export class CalculatorComponent {
     }
 
     DisplayMinimumHonorForMaxRatingGain(): number {
-        return this.calculationService.CalculateMinimumHonorForMaxRatingGain(this.currentRank);
+        return this.calculationService.CalculateMinimumHonorForRatingGain(this.currentRank, this.rankProgress, this.calculationService.CalculateMaxRatingGain(this.currentRank, this.rankProgress));
     }
 
     //#endregion

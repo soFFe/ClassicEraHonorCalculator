@@ -1,18 +1,22 @@
 import { Rank } from '../models/rank';
 import { Component, Input, ViewChild } from '@angular/core';
 import { Chart, ChartConfiguration, ChartOptions } from 'chart.js';
-import { BaseChartDirective } from 'ng2-charts';
+import { BaseChartDirective, provideCharts, withDefaultRegisterables } from 'ng2-charts';
 import 'chartjs-adapter-date-fns';
 import Annotation, { AnnotationOptions, BoxAnnotationOptions } from 'chartjs-plugin-annotation';
 import { CalculationService } from '../services/calculation.service';
 import { Router } from '@angular/router';
+import { RankingResult } from '../models/rankingResult';
+import { FormsModule } from '@angular/forms';
+import { NgFor } from '@angular/common';
+import { NgIcon } from '@ng-icons/core';
 
 @Component({
     selector: 'app-progression-planning',
     templateUrl: './progression-planning.component.html',
     styleUrls: ['./progression-planning.component.scss'],
-    providers: [CalculationService],
-    standalone: false
+    providers: [CalculationService, provideCharts(withDefaultRegisterables())],
+    imports: [FormsModule, NgFor, NgIcon, BaseChartDirective]
 })
 export class ProgressionPlanningComponent {
     //#region currentRankNum
@@ -171,7 +175,7 @@ export class ProgressionPlanningComponent {
             CP: {
                 display: true,
                 type: 'linear',
-                max: 65000,
+                max: Rank.MaxCp,
                 title: {
                     display: true,
                     text: "Rating (CP)"
@@ -239,17 +243,14 @@ export class ProgressionPlanningComponent {
         let lastProgress = this.rankProgress;
 
         for (let i = 0; i < this.numWeeks; i++) {
-            const nextRankNum = this.calculationService.CalculateNextRankNum(lastRank, lastProgress, Rank.MaxHonor, 60);
-            const nextRank = Rank.RankMap.get(nextRankNum);
-            if (!nextRank) {
-                throw new Error(`Could not find Rank ${nextRankNum} in RankMap`);
-            }
-            const nextProgress = this.calculationService.CalculateNextRankPercentage(lastRank, lastProgress, Rank.MaxHonor, 60);
+            const currentRating = this.calculationService.CalculateCurrentRating(lastRank, lastProgress);
+            const nextRating = this.calculationService.CalculateNextRating(lastRank, lastProgress, Rank.MaxHonor, 60);
+            const rankingResult = new RankingResult(currentRating, nextRating, Rank.MaxHonor);
 
-            data.push(this.calculationService.CalculateNextRating(lastRank, lastProgress, Rank.MaxHonor, 60));
+            data.push(nextRating);
 
-            lastRank = nextRank;
-            lastProgress = nextProgress;
+            lastRank = rankingResult.EndRank;
+            lastProgress = rankingResult.EndRankPercentage;
         }
 
         return data;
@@ -270,17 +271,14 @@ export class ProgressionPlanningComponent {
         let lastProgress = this.rankProgress;
 
         for (let i = 0; i < this.numWeeks; i++) {
-            const nextRankNum = this.calculationService.CalculateNextRankNum(lastRank, lastProgress, lastRank.HonorRequirement, 60);
-            const nextRank = Rank.RankMap.get(nextRankNum);
-            if (!nextRank) {
-                throw new Error(`Could not find Rank ${nextRankNum} in RankMap`);
-            }
-            const nextProgress = this.calculationService.CalculateNextRankPercentage(lastRank, lastProgress, lastRank.HonorRequirement, 60);
+            const currentRating = this.calculationService.CalculateCurrentRating(lastRank, lastProgress);
+            const nextRating = this.calculationService.CalculateNextRating(lastRank, lastProgress, lastRank.HonorRequirement, 60);
+            const rankingResult = new RankingResult(currentRating, nextRating, lastRank.HonorRequirement);
 
-            data.push(this.calculationService.CalculateNextRating(lastRank, lastProgress, lastRank.HonorRequirement, 60));
+            data.push(nextRating);
 
-            lastRank = nextRank;
-            lastProgress = nextProgress;
+            lastRank = rankingResult.EndRank;
+            lastProgress = rankingResult.EndRankPercentage;
         }
 
         // 
@@ -332,14 +330,14 @@ export class ProgressionPlanningComponent {
                     yScaleID: 'CP',
                     xScaleID: 'Week',
                     yMin: thisRank.CpRequirement,
-                    yMax: i == Rank.MaxRankNum ? 65000 : (nextRank?.CpRequirement ?? 0) - 1,
+                    yMax: i == Rank.MaxRankNum ? Rank.MaxCp : (nextRank?.CpRequirement ?? 0) - 1,
                     borderColor: "#27374D",
                     borderWidth: 1,
                     backgroundColor: 'rgba(39,55,77,.1)',
                     label: {
                         display: false,
                         drawTime: 'afterDatasetsDraw',
-                        content: `Rank ${i} (${thisRank.CpRequirement} - ${i == Rank.MaxRankNum ? 65000 : (nextRank?.CpRequirement ?? 0) - 1})`,
+                        content: `Rank ${i} (${thisRank.CpRequirement} - ${i == Rank.MaxRankNum ? Rank.MaxCp : (nextRank?.CpRequirement ?? 0) - 1})`,
                         position: 'end',
                         color: '#dee2e6'
                     },

@@ -1,6 +1,7 @@
 import { APP_BASE_HREF, PlatformLocation } from '@angular/common';
 import { Component, Inject } from '@angular/core';
-import { CountdownConfig } from 'ngx-countdown';
+import { CountdownConfig, CountdownComponent } from 'ngx-countdown';
+import { RouterLink, RouterLinkActive } from '@angular/router';
 
 const CountdownTimeUnits: Array<[string, number]> = [
     ['D', 1000 * 60 * 60 * 24], // days
@@ -19,7 +20,7 @@ const CountdownTimeUnits: Array<[string, number]> = [
             useFactory: (pl: PlatformLocation) => pl.getBaseHrefFromDOM(),
             deps: [PlatformLocation]
         }],
-    standalone: false
+    imports: [CountdownComponent, RouterLink, RouterLinkActive]
 })
 export class HeaderComponent {
     euResetTimerConfig: CountdownConfig = {

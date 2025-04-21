@@ -15,17 +15,17 @@ describe('ProgressionPlanningComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [ProgressionPlanningComponent],
-      providers: [provideCharts(withDefaultRegisterables()), { provider: ComponentFixtureAutoDetect, useValue: true }],
-      imports: [
+    providers: [provideCharts(withDefaultRegisterables()), { provider: ComponentFixtureAutoDetect, useValue: true }],
+    imports: [
         BrowserModule,
         FormsModule,
         CountdownModule,
         AppRoutingModule,
         BaseChartDirective,
-        NgIconsModule.withIcons({ bootstrapDash, bootstrapPlus})
-      ],
-    });
+        NgIconsModule.withIcons({ bootstrapDash, bootstrapPlus }),
+        ProgressionPlanningComponent
+    ],
+});
     fixture = TestBed.createComponent(ProgressionPlanningComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
