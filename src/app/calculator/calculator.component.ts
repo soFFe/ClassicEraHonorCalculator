@@ -86,6 +86,7 @@ export class CalculatorComponent {
         this.qualificationMilestones = this.DisplayQualificationMilestones();
         this.updateUrl();
         this.CalculateResults();
+        this.TriggerOptimalPathCalculation();
     }
     //#endregion
     //#region targetRankNum
@@ -114,7 +115,7 @@ export class CalculatorComponent {
         }
 
         this.targetRank = rTarget;
-        this.CalculateResults();
+        this.TriggerOptimalPathCalculation();
     }
     
     //#endregion
@@ -140,6 +141,7 @@ export class CalculatorComponent {
 
         this.updateUrl();
         this.CalculateResults();
+        this.TriggerOptimalPathCalculation();
     }
     //#endregion
     //#region honorFarmed
@@ -195,6 +197,7 @@ export class CalculatorComponent {
     rankingResult!: RankingResult;
     maxRankingResult!: RankingResult;
     optimalPath!: RankingResultTotal;
+    numExploredPaths!: number;
 
     constructor(private router: Router, private calculationService: CalculationService) {
         const rCurrent = Rank.RankMap.get(this.currentRankNum);
@@ -211,6 +214,7 @@ export class CalculatorComponent {
 
         this.qualificationMilestones = this.DisplayQualificationMilestones();
         this.CalculateResults();
+        this.TriggerOptimalPathCalculation();
     }
 
     CalculateResults() {
@@ -224,6 +228,9 @@ export class CalculatorComponent {
             this.calculationService.CalculateCurrentRating(this.currentRank, this.rankProgress) + this.calculationService.CalculateMaxRatingGain(this.currentRank, this.rankProgress),
             this.calculationService.CalculateMinimumHonorForRatingGain(this.currentRank, this.rankProgress, this.calculationService.CalculateMaxRatingGain(this.currentRank, this.rankProgress))
         );
+    }
+
+    TriggerOptimalPathCalculation() { // save performance where possible
         this.optimalPath = this.CalculateOptimalPath(this.currentRank, this.rankProgress, this.targetRank);
     }
 
@@ -264,6 +271,48 @@ export class CalculatorComponent {
         
         // okay we found the lowest amount of weeks possible. now try to minimize the honor necessary to reach our goal by exploring other possibilities
         const allPaths = this.ExploreAllPathOptions(endRank, firstTry);
+
+        // repeat process until we explored every possible path
+        let unexploredPaths = Array.from(allPaths.filter(p => p.HasBeenExplored == false)); // copy array of unexplored paths
+        if(unexploredPaths.length > 0)
+        {
+            while(unexploredPaths.length > 0)
+            {
+                for(let j = unexploredPaths.length - 1; j >= 0; j--)
+                {
+                    const path = unexploredPaths[j];
+                    const pathIndex = allPaths.findIndex(p => p.StepsTakenHash == path.StepsTakenHash);
+                    const pathAlreadyExplored = path.HasBeenExplored || (pathIndex !== -1 && allPaths[pathIndex].HasBeenExplored);
+
+                    if(pathAlreadyExplored)
+                    {
+                        // double double check so we don't end up in an infinite loop
+                        console.warn("We already explored this path: ", path.StepsTakenHash);
+                        // we already know this path, pop it from unexploredPaths and skip
+                        unexploredPaths.pop();
+                        continue;
+                    }
+
+                    const newPaths = this.ExploreAllPathOptions(endRank, path);
+                    
+                    // any new paths that havent been explored?
+                    newPaths.filter(np => !np.HasBeenExplored).forEach(np => {
+                        const newPathIndex = allPaths.findIndex(ap => ap.StepsTakenHash == np.StepsTakenHash);
+                        if(newPathIndex === -1) // make sure we only add new paths (to possibly explore) to allPaths
+                        {
+                            allPaths.push(np); // add new discovery to allPaths
+                        }
+                    });
+
+                    unexploredPaths.pop(); // pop this now explored path from the array
+                }
+
+                // we emptied previos unexplored paths, lets see if there's new ones and if yes, repeat this process
+                unexploredPaths = allPaths.filter(p => p.HasBeenExplored == false);
+            }
+        }
+
+        this.numExploredPaths = allPaths.length;
 
         return this.ChooseBestPathOption(allPaths);
     }
@@ -342,6 +391,8 @@ export class CalculatorComponent {
                 }
             }
         }
+
+        firstTry.HasBeenExplored = true; // setting this here thankfully propagates back to allPossiblePaths
         
         return allPossiblePaths;
     }
@@ -359,11 +410,11 @@ export class CalculatorComponent {
             for(let i = 1; i < results.length; i++)
             {
                 const currentEntry = results[i];
-                if(currentEntry.WeeksTotal < bestResult.WeeksTotal)
+                if(currentEntry.WeeksTotal < bestResult.WeeksTotal) // priority 1: fastest way
                     bestResult = currentEntry;
-                else if(currentEntry.WeeksTotal == bestResult.WeeksTotal && currentEntry.HonorTotal < bestResult.HonorTotal)
+                else if(currentEntry.WeeksTotal == bestResult.WeeksTotal && currentEntry.HonorTotal < bestResult.HonorTotal) // priority 2: least amount of honor
                     bestResult = currentEntry;
-                else if(currentEntry.WeeksTotal == bestResult.WeeksTotal && currentEntry.HonorTotal <= bestResult.HonorTotal && currentEntry.EndRank > bestResult.EndRank)
+                else if(currentEntry.WeeksTotal == bestResult.WeeksTotal && currentEntry.HonorTotal <= bestResult.HonorTotal && currentEntry.EndRank.Num > bestResult.EndRank.Num) // priority 3: least amount of honor, highest ranknum
                     bestResult = currentEntry;
             }
 

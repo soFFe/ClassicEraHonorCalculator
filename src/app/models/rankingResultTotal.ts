@@ -18,6 +18,16 @@ export class RankingResultTotal implements Result {
             this.EndRating = stepsTaken[stepsTaken.length - 1].EndRating;
             this.EndRank = stepsTaken[stepsTaken.length - 1].EndRank;
             this.EndRankPercentage = stepsTaken[stepsTaken.length - 1].EndRankPercentage;
+
+            // build StepsTakenHash
+            this.StepsTakenHash = "";
+            this.StepsTaken.forEach((st, i) => {
+                if(i > 0)
+                {
+                    this.StepsTakenHash += "-";
+                }
+                this.StepsTakenHash += st.HonorTotal;
+            });
         }
         else
         {
@@ -27,6 +37,8 @@ export class RankingResultTotal implements Result {
     
     //#region Public Members
     StepsTaken: Array<RankingResult>;
+    HasBeenExplored: boolean = false; // flag if we already iterated over this path in the Optimal Path Calculation
+    StepsTakenHash: string;
     StartRating: number;
     StartRank: Rank;
     StartRankPercentage: number;

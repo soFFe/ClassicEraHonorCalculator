@@ -5,7 +5,7 @@
     box-sizing: content-box;
 }
 
-.progressbar-milestone-button {
+.setrating-button, .progressbar-milestone-button {
     outline: none;
     border: none;
     background: none;
@@ -14,7 +14,7 @@
     height: 100%;
 }
 
-.progressbar-milestone:hover .progressbar-milestone-button>ng-icon
+.progressbar-milestone:hover .progressbar-milestone-button>ng-icon, .setrating-button-container:hover .setrating-button>ng-icon
 {
     opacity: 1;
 }

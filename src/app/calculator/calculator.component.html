@@ -145,14 +145,14 @@
                     <tbody>
                         <tr class="align-middle">
                             <td class="text-end">Rank</td>
-                            <td class="font-monospace">
-                                <button class="btn btn-outline-secondary text-white d-inline-flex align-items-center me-2"
+                            <td class="font-monospace setrating-button-container">
+                                <button class="setrating-button text-white d-inline-flex align-items-center align-middle"
                                     (click)="currentRankNum = this.rankingResult.EndRank.Num;rankProgress = this.rankingResult.EndRankPercentage.toFixed(2);"
                                     [title]="'set Current Rank to Rank ' + this.rankingResult.EndRank.Num + ' (' + this.rankingResult.EndRankPercentage.toFixed(2) + '%)'">
-                                    <ng-icon name="bootstrapChevronDoubleRight" class="d-flex"></ng-icon>
+                                    <ng-icon name="bootstrapChevronDoubleRight" class="d-flex fade"></ng-icon>
+                                    <img [src]="DisplayRankIconUrl(this.rankingResult.EndRank.Num)" class="img-fluid">
                                 </button>
                                 <span>
-                                    <img [src]="DisplayRankIconUrl(this.rankingResult.EndRank.Num)" class="img-fluid">
                                     <ng-container *ngIf="factionNames == 0"> Rank {{ this.rankingResult.EndRank.Num }}</ng-container>
                                     <ng-container *ngIf="factionNames == 1"> {{ this.rankingResult.EndRank.Name.Alliance }}</ng-container>
                                     <ng-container *ngIf="factionNames == 2"> {{ this.rankingResult.EndRank.Name.Horde }}</ng-container>
@@ -163,14 +163,14 @@
                         </tr>
                         <tr class="align-middle">
                             <td class="text-end">Max Possible Rank</td>
-                            <td class="font-monospace">
-                                <button class="btn btn-outline-secondary text-white d-inline-flex align-items-center me-2"
+                            <td class="font-monospace setrating-button-container">
+                                <button class="setrating-button text-white d-inline-flex align-items-center align-middle"
                                     (click)="currentRankNum = this.maxRankingResult.EndRank.Num;rankProgress = this.maxRankingResult.EndRankPercentage.toFixed(2);"
                                     [title]="'set Current Rank to Rank ' + this.maxRankingResult.EndRank.Num + ' (' + this.maxRankingResult.EndRankPercentage.toFixed(2) + '%)'">
-                                    <ng-icon name="bootstrapChevronDoubleRight" class="d-flex"></ng-icon>
+                                    <ng-icon name="bootstrapChevronDoubleRight" class="d-flex fade"></ng-icon>
+                                    <img [src]="DisplayRankIconUrl(this.maxRankingResult.EndRank.Num)" class="img-fluid">
                                 </button>
                                 <span>
-                                    <img [src]="DisplayRankIconUrl(this.maxRankingResult.EndRank.Num)" class="img-fluid">
                                     <ng-container *ngIf="factionNames == 0"> Rank {{ this.maxRankingResult.EndRank.Num }}</ng-container>
                                     <ng-container *ngIf="factionNames == 1"> {{ this.maxRankingResult.EndRank.Name.Alliance }}</ng-container>
                                     <ng-container *ngIf="factionNames == 2"> {{ this.maxRankingResult.EndRank.Name.Horde }}</ng-container>
@@ -186,7 +186,7 @@
     </div>
     <div class="mt-3">
         <div class="d-grid justify-content-center align-items-center gap-2">
-            <ng-icon name="bootstrapArrowDownCircleFill" size="64"></ng-icon>
+            <ng-icon name="bootstrapArrowDownCircleFill" size="32"></ng-icon>
         </div>
     </div>
     <div class="row">
@@ -221,14 +221,14 @@
                                 <td class="font-monospace text-end">
                                     {{ pathResult.HonorTotal }} Honor
                                 </td>
-                                <td class="font-monospace">
-                                    <button class="btn btn-outline-secondary text-white d-inline-flex align-items-center me-2"
+                                <td class="font-monospace setrating-button-container">
+                                    <button class="setrating-button text-white d-inline-flex align-items-center align-middle"
                                         (click)="currentRankNum = pathResult.EndRank.Num;rankProgress = pathResult.EndRankPercentage.toFixed(2);"
                                         [title]="'set Current Rank to Rank ' + pathResult.EndRank.Num + ' (' + pathResult.EndRankPercentage.toFixed(2) + '%)'">
-                                        <ng-icon name="bootstrapChevronDoubleRight" class="d-flex"></ng-icon>
+                                        <ng-icon name="bootstrapChevronDoubleRight" class="d-flex fade"></ng-icon>
+                                        <img [src]="DisplayRankIconUrl(pathResult.EndRank.Num)" class="img-fluid">
                                     </button>
                                     <span>
-                                        <img [src]="DisplayRankIconUrl(pathResult.EndRank.Num)" class="img-fluid">
                                         <ng-container *ngIf="factionNames == 0"> Rank {{ pathResult.EndRank.Num }}</ng-container>
                                         <ng-container *ngIf="factionNames == 1"> {{ pathResult.EndRank.Name.Alliance }}</ng-container>
                                         <ng-container *ngIf="factionNames == 2"> {{ pathResult.EndRank.Name.Horde }}</ng-container>
@@ -240,6 +240,10 @@
                         </ng-container>
                     </tbody>
                 </table>
+                <div class="card-footer text-body-secondary">
+                    <span class="d-block text-center">Best result out of <span class="text-info-emphasis">{{ this.numExploredPaths }}</span> explored paths to Rank {{ this.targetRankNum }}</span>
+                    <small class="d-block text-center">Priority: 1. Reach the goal rank > 2. Least amount of Weeks > 3. Least Honor for the whole path</small>
+                </div>                
             </div>
         </div>
     </div>
