@@ -11,8 +11,8 @@
                     <input type="number" class="form-control font-monospace" [(ngModel)]="characterLevel" name="characterLevel" id="characterLevel" min="1" max="60" #characterLevelInput>
                     <ng-template #CharacterLevelPopover>
                         <p>This is an experimental feature. Setting this to below 60 will cap your Rank based on my assumption where the Level Caps are.</p>
-                        <p>Optimal path does not support Level Caps.</p>
-                        <p>I only have 3 data points confirming these Level Caps, and none that disprove them yet. Please send me screenshots of your Honor Tab if you end up getting less (or more) progress than expected.</p>
+                        <p class="fw-bold">The "Optimal Path" does not support Level Caps.</p>
+                        <p>I only have 4 data points confirming these Level Caps, and none that disprove them yet. Please send me screenshots of your Honor Tab if you end up getting less (or more) progress than expected.</p>
                     </ng-template>
                 </div>
             </div>
@@ -241,7 +241,6 @@
                     </tbody>
                 </table>
                 <div class="card-footer text-body-secondary">
-                    <span class="d-block text-center">Best result out of <span class="text-info-emphasis">{{ this.numExploredPaths }}</span> explored paths to Rank {{ this.targetRankNum }}</span>
                     <small class="d-block text-center">Priority: 1. Reach the goal rank > 2. Least amount of Weeks > 3. Least Honor for the whole path</small>
                 </div>                
             </div>

@@ -10,6 +10,8 @@ import { RankingResult } from '../models/rankingResult';
 import { FormsModule } from '@angular/forms';
 import { NgFor } from '@angular/common';
 import { NgIcon } from '@ng-icons/core';
+import { PathfindingService } from '../services/pathfinding.service';
+import { RankingResultTotal } from '../models/rankingResultTotal';
 
 @Component({
     selector: 'app-progression-planning',
@@ -116,9 +118,9 @@ export class ProgressionPlanningComponent {
             this._targetRankNum = Number(value);
         }
 
-        const rTarget = Rank.RankMap.get(this._targetRankNum);
+        const rTarget = Rank.RankMap.get(this.targetRankNum);
         if (!rTarget) {
-            throw new Error(`Could not find Rank ${this._targetRankNum} in RankMap`);
+            throw new Error(`Could not find Rank ${this.targetRankNum} in RankMap`);
         }
         this.targetRank = rTarget;
 
@@ -145,7 +147,17 @@ export class ProgressionPlanningComponent {
                 backgroundColor: '#950101',
                 yAxisID: 'CP',
                 xAxisID: 'Week',
-                stepped: true,
+                // stepped: true, // while accurate, may look confusing
+            },
+            {
+                data: this.GenerateChartDataOptimalPath(),
+                label: 'Optimal Path',
+                fill: false,
+                borderColor: '#cfcf00',
+                backgroundColor: '#cfcf00',
+                yAxisID: 'CP',
+                xAxisID: 'Week',
+                // stepped: true, // while accurate, may look confusing
             },
             {
                 data: this.GenerateChartDataMinProgress(),
@@ -156,7 +168,7 @@ export class ProgressionPlanningComponent {
                 backgroundColor: '#019501',
                 yAxisID: 'CP',
                 xAxisID: 'Week',
-                stepped: true,
+                // stepped: true, // while accurate, may look confusing
             }
         ]
     }
@@ -198,7 +210,7 @@ export class ProgressionPlanningComponent {
         }
     };
 
-    constructor(private calculationService: CalculationService, private router: Router) {
+    constructor(private calculationService: CalculationService, private router: Router, private pathfindingService: PathfindingService) {
         Chart.register(Annotation);
 
         const rCurrent = Rank.RankMap.get(this.currentRankNum);
@@ -256,6 +268,35 @@ export class ProgressionPlanningComponent {
         return data;
     }
 
+    private GenerateChartDataOptimalPath(): number[] {
+        if (this.currentRank == undefined) {
+            const rCurrent = Rank.RankMap.get(this.currentRankNum);
+            if (!rCurrent) {
+                throw new Error(`Could not find Rank ${this.currentRankNum} in RankMap`);
+            }
+
+            this.currentRank = rCurrent;
+        }
+        if (this.targetRank == undefined) {
+            const rTarget = Rank.RankMap.get(this.targetRankNum);
+            if (!rTarget) {
+                throw new Error(`Could not find Rank ${this.targetRankNum} in RankMap`);
+            }
+
+            this.targetRank = rTarget;
+        }
+
+        const data: number[] = [this.calculationService.CalculateCurrentRating(this.currentRank, this.rankProgress)];
+        const optimalPath: RankingResultTotal = this.pathfindingService.FindOptimalPath(this.currentRank, this.rankProgress, this.targetRank);
+
+        for(let i = 0; i < this.numWeeks && i < optimalPath.StepsTaken.length; i++)
+        {
+            data.push(optimalPath.StepsTaken[i].EndRating);
+        }
+
+        return data;
+    }
+
     private GenerateChartDataMinProgress(): number[] {
         if (this.currentRank == undefined) {
             const rCurrent = Rank.RankMap.get(this.currentRankNum);
@@ -281,8 +322,6 @@ export class ProgressionPlanningComponent {
             lastProgress = rankingResult.EndRankPercentage;
         }
 
-        // 
-
         return data;
     }
     //#endregion
@@ -299,8 +338,8 @@ export class ProgressionPlanningComponent {
 
         const annotations: AnnotationOptions[] = [];
         if (this.progressionChartData) {
-            this.progressionChartData.datasets.forEach(set => {
-                if (set.data != null) {
+            this.progressionChartData.datasets.forEach((set, index) => {
+                if (set.data != null && index != 1) { // optimal path (dataset with index 1) just lays over Max Progress (index 0). looks confusing
                     const data = set.data.map(d => Number(d));
                     const maxValue = Math.max(...data);
                     const targetIndex = data.findIndex((v) => v >= this.targetRank.CpRequirement);
@@ -369,7 +408,8 @@ export class ProgressionPlanningComponent {
     UpdateChart(): void {
         this.progressionChartData.labels = this.GenerateChartLabels();
         this.progressionChartData.datasets[0].data = this.GenerateChartDataMaxProgress();
-        this.progressionChartData.datasets[1].data = this.GenerateChartDataMinProgress();
+        this.progressionChartData.datasets[1].data = this.GenerateChartDataOptimalPath();
+        this.progressionChartData.datasets[2].data = this.GenerateChartDataMinProgress();
         if (this._chart?.chart) {
             if(this._chart.chart.options.plugins?.annotation?.annotations) {
                 this._chart.chart.options.plugins.annotation.annotations = this.GenerateAnnotations();
